@@ -58,6 +58,7 @@ class _AuthCheckState extends State<AuthCheck> {
         setState(() {
           User.employeeid = sharedPreferences.getString('employeeid')!;
           userAvailable = true;
+          // print('Show: + ${User.employeeid}');
         });
       }
     } catch (e) {
