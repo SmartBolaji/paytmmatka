@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'AttendXpert',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const KeyboardVisibilityProvider(child: AuthCheck()),
       localizationsDelegates: const [MonthYearPickerLocalizations.delegate],

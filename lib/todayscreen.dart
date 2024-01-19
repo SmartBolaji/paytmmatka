@@ -263,47 +263,49 @@ class _TodayScreenState extends State<TodayScreen> {
                     ),
                   ],
                 ),
-                GestureDetector(
-                  onTap: () {
-                    _scanQR();
-                  },
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 18),
-                    height: screenHeight / 18,
-                    width: screenWidth / 10,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(2, 2),
-                            blurRadius: 10,
-                          )
-                        ]),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.expand,
-                              size: 20,
-                              color: primary,
-                            ),
-                            Icon(
-                              FontAwesomeIcons.qrcode,
-                              size: 10,
-                              color: primary,
-                            )
-                          ],
+                checkOut == '--/--'
+                    ? GestureDetector(
+                        onTap: () {
+                          _scanQR();
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 26),
+                          height: screenHeight / 18,
+                          width: screenWidth / 10,
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  offset: Offset(2, 2),
+                                  blurRadius: 10,
+                                )
+                              ]),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Icon(
+                                    FontAwesomeIcons.expand,
+                                    size: 20,
+                                    color: primary,
+                                  ),
+                                  Icon(
+                                    FontAwesomeIcons.qrcode,
+                                    size: 10,
+                                    color: primary,
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                )
+                      )
+                    : const Center()
               ],
             ),
             Container(
@@ -519,7 +521,7 @@ class _TodayScreenState extends State<TodayScreen> {
                       ),
                     ),
                   ),
-            location != '' ? Text('Location + $location') : const SizedBox(),
+            // location != '' ? Text('Location + $location') : const SizedBox(),
           ],
         ),
       ),
