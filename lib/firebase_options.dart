@@ -67,7 +67,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '445906960289',
     projectId: 'attendance-app-479e1',
     storageBucket: 'attendance-app-479e1.appspot.com',
-    iosBundleId: 'com.example.attendxpert',
+    iosBundleId: 'com.example.paytmmatka',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -76,6 +76,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '445906960289',
     projectId: 'attendance-app-479e1',
     storageBucket: 'attendance-app-479e1.appspot.com',
-    iosBundleId: 'com.example.attendxpert.RunnerTests',
+    iosBundleId: 'com.example.paytmmatka.RunnerTests',
   );
 }

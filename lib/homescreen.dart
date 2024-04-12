@@ -1,8 +1,8 @@
-import 'package:attendxpert/calendarscreen.dart';
-import 'package:attendxpert/model/user.dart';
-import 'package:attendxpert/profilescreen.dart';
-import 'package:attendxpert/services/location_service.dart';
-import 'package:attendxpert/todayscreen.dart';
+import 'package:paytmmatka/calendarscreen.dart';
+import 'package:paytmmatka/model/user.dart';
+import 'package:paytmmatka/profilescreen.dart';
+import 'package:paytmmatka/services/location_service.dart';
+import 'package:paytmmatka/todayscreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

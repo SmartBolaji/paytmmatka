@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:attendxpert/homescreen.dart';
-import 'package:attendxpert/model/user.dart';
+import 'package:paytmmatka/homescreen.dart';
+import 'package:paytmmatka/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';

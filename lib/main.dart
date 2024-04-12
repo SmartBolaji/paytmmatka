@@ -1,9 +1,9 @@
-import 'package:attendxpert/firebase_options.dart';
-import 'package:attendxpert/homescreen.dart';
-import 'package:attendxpert/model/user.dart';
+import 'package:paytmmatka/firebase_options.dart';
+import 'package:paytmmatka/homescreen.dart';
+import 'package:paytmmatka/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:attendxpert/loginscreen.dart';
+import 'package:paytmmatka/loginscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:month_year_picker/month_year_picker.dart';
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'AttendXpert',
+      title: 'paytmmatka',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const KeyboardVisibilityProvider(child: AuthCheck()),
       localizationsDelegates: const [MonthYearPickerLocalizations.delegate],
