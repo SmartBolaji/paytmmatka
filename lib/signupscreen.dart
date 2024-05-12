@@ -1,26 +1,29 @@
+
 import 'package:paytmmatka/mainscreen.dart';
 import 'package:paytmmatka/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:paytmmatka/signupscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController mController = TextEditingController();
+class _SignUpScreenState extends State<SignUpScreen> {
+  TextEditingController idController = TextEditingController();
   TextEditingController passController = TextEditingController();
+  TextEditingController mController = TextEditingController();
+  TextEditingController pinController = TextEditingController();
 
   double screenHeight = 0.0;
   double screenWidth = 0.0;
 
   Color primary = Colors.blue.shade300;
   bool pass = true;
+  bool pinpass = true;
   late SharedPreferences sharedPreferences;
 
   @override
@@ -31,6 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
+          // crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
               height: screenHeight / 2.5,
@@ -50,7 +54,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 margin: EdgeInsets.only(
                     top: screenHeight / 15, bottom: screenHeight / 20),
                 child: Text(
-                  'Login',
+                  'Register!',
                   style: TextStyle(
                       fontSize: screenWidth / 18, fontFamily: 'Nexa Bold'),
                 )),
@@ -60,32 +64,44 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // fieldTitle('Mobile Number'),
-                    customField('Mobile Number', Icons.person, null,
+                    customField('Username', Icons.person, null, idController,
+                        false, () {}),
+                    customField('Phone Number', Icons.phone_android, null,
                         mController, false, () {}),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // fieldTitle('Password'),
-                        fgtPass('Forget Password?', onTap: () {})
-                      ],
+                    customField(
+                      'Password',
+                      Icons.password,
+                      pass ? Icons.visibility_off : Icons.visibility,
+                      passController,
+                      pass,
+                      () {
+                        setState(
+                          () {
+                            pass = !pass;
+                          },
+                        );
+                      },
                     ),
                     customField(
-                        'Password',
-                        Icons.password,
-                        pass ? Icons.visibility_off : Icons.visibility,
-                        passController,
-                        pass, () {
-                      setState(() {
-                        pass = !pass;
-                      });
-                    }),
+                      'MPin',
+                      Icons.pin,
+                      pinpass ? Icons.visibility_off : Icons.visibility,
+                      pinController,
+                      pinpass,
+                      () {
+                        setState(
+                          () {
+                            pinpass = !pinpass;
+                          },
+                        );
+                      },
+                    ),
                     GestureDetector(
                       onTap: () async {
                         // Keypad closes
                         FocusScope.of(context).unfocus();
 
-                        String id = mController.text.trim();
+                        String id = idController.text.trim();
                         String password = passController.text.trim();
 
                         if (id.isEmpty) {
@@ -115,7 +131,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => MainScreen()));
+                                        builder: (context) =>
+                                             SafeArea(child: MainScreen())));
                               });
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -171,11 +188,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SafeArea(child: SignUpScreen())));
+                                  builder: (context) =>  MainScreen()));
                         },
                         child: Text(
-                          'Register Now',
+                          'Login Now',
                           style: TextStyle(
                               fontFamily: 'Nexa Bold',
                               fontSize: screenWidth / 30,
@@ -241,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ]),
       child: Row(
         children: [
-          SizedBox(
+          Container(
             width: screenWidth / 6,
             child: Icon(
               icon,

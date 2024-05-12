@@ -27,10 +27,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -44,38 +41,49 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCsACTdym7LKCN066-uTDhdWXCgGlFqAZk',
-    appId: '1:445906960289:web:45d5753498047c916815e0',
-    messagingSenderId: '445906960289',
-    projectId: 'attendance-app-479e1',
-    authDomain: 'attendance-app-479e1.firebaseapp.com',
-    storageBucket: 'attendance-app-479e1.appspot.com',
-    measurementId: 'G-RZNGCDJN7F',
+    apiKey: 'AIzaSyBfy2JhE3QMrreM4BOCdyOP3emn9jNOHJ8',
+    appId: '1:273504583231:web:f1ae8586cbc0fbdd42828a',
+    messagingSenderId: '273504583231',
+    projectId: 'paytmmatka',
+    authDomain: 'paytmmatka.firebaseapp.com',
+    storageBucket: 'paytmmatka.appspot.com',
+    measurementId: 'G-7DCSTJWNXN',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAxIbGm8JyZ4yKXy6AhIxx-F1NM5nR17yU',
-    appId: '1:445906960289:android:83d8b82e5951559c6815e0',
-    messagingSenderId: '445906960289',
-    projectId: 'attendance-app-479e1',
-    storageBucket: 'attendance-app-479e1.appspot.com',
+    apiKey: 'AIzaSyCIB3HfOaNb4k0WEMh5Auxbtx-qq2z0vAQ',
+    appId: '1:273504583231:android:abd5fabcf254117042828a',
+    messagingSenderId: '273504583231',
+    projectId: 'paytmmatka',
+    storageBucket: 'paytmmatka.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyB_kNYjQdvKmDemNlWHwT1p5FcvxUaUhdQ',
-    appId: '1:445906960289:ios:ded0bb1e7667a4e06815e0',
-    messagingSenderId: '445906960289',
-    projectId: 'attendance-app-479e1',
-    storageBucket: 'attendance-app-479e1.appspot.com',
+    apiKey: 'AIzaSyDDEO5oC8zahQwaS5JFmYODVHDkXU4J07E',
+    appId: '1:273504583231:ios:bb75667ae8434e1042828a',
+    messagingSenderId: '273504583231',
+    projectId: 'paytmmatka',
+    storageBucket: 'paytmmatka.appspot.com',
     iosBundleId: 'com.example.paytmmatka',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyB_kNYjQdvKmDemNlWHwT1p5FcvxUaUhdQ',
-    appId: '1:445906960289:ios:ab8c47db6460a3626815e0',
-    messagingSenderId: '445906960289',
-    projectId: 'attendance-app-479e1',
-    storageBucket: 'attendance-app-479e1.appspot.com',
-    iosBundleId: 'com.example.paytmmatka.RunnerTests',
+    apiKey: 'AIzaSyDDEO5oC8zahQwaS5JFmYODVHDkXU4J07E',
+    appId: '1:273504583231:ios:bb75667ae8434e1042828a',
+    messagingSenderId: '273504583231',
+    projectId: 'paytmmatka',
+    storageBucket: 'paytmmatka.appspot.com',
+    iosBundleId: 'com.example.paytmmatka',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyBfy2JhE3QMrreM4BOCdyOP3emn9jNOHJ8',
+    appId: '1:273504583231:web:06b7a572e10ed1cf42828a',
+    messagingSenderId: '273504583231',
+    projectId: 'paytmmatka',
+    authDomain: 'paytmmatka.firebaseapp.com',
+    storageBucket: 'paytmmatka.appspot.com',
+    measurementId: 'G-62D9S6KD6C',
+  );
+
 }
