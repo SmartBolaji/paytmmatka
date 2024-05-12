@@ -1,4 +1,4 @@
-package com.paytmmatka.attendanceapp
+package com.paytmmatka.myapp
 
 import io.flutter.embedding.android.FlutterActivity
 

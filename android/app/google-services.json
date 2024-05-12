@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "445906960289",
-    "project_id": "attendance-app-479e1",
-    "storage_bucket": "attendance-app-479e1.appspot.com"
+    "project_number": "273504583231",
+    "project_id": "paytmmatka",
+    "storage_bucket": "paytmmatka.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:445906960289:android:83d8b82e5951559c6815e0",
+        "mobilesdk_app_id": "1:273504583231:android:abd5fabcf254117042828a",
         "android_client_info": {
-          "package_name": "com.paytmmatka.attendanceapp"
+          "package_name": "com.paytmmatka.myapp"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAxIbGm8JyZ4yKXy6AhIxx-F1NM5nR17yU"
+          "current_key": "AIzaSyCIB3HfOaNb4k0WEMh5Auxbtx-qq2z0vAQ"
         }
       ],
       "services": {
