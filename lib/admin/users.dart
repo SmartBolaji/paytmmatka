@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:paytmmatka/services/task_data.dart';
 import 'package:paytmmatka/widgets/edit_trans.dart';
+import 'package:paytmmatka/widgets/edit_users.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -441,11 +442,15 @@ class _UsersScreenState extends State<UsersScreen> {
                                                           rowIndex: 1,
                                                           onTap: () async {
                                                         // Use viewTransact and await the Future
-                                                        await editTransact(
+                                                        Navigator.push(
                                                             context,
-                                                            doc,
-                                                            screenHeight,
-                                                            screenWidth);
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        UserDetailsPage(
+                                                                          doc:
+                                                                              doc,
+                                                                        )));
                                                         // After the Future completes (status change is done), reload the page
                                                         refreshData();
                                                       }),

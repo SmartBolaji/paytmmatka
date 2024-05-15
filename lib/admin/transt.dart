@@ -103,9 +103,7 @@ class _TranstScreenState extends State<TranstScreen> {
         }
       });
     } catch (e) {
-      Transform.scale(
-          scale: 0.5,
-          child: const CircularProgressIndicator(color: Colors.white));
+      e.toString();
     }
   }
 
@@ -306,7 +304,6 @@ class _TranstScreenState extends State<TranstScreen> {
                         onTap: () {
                           setState(() {
                             refreshLoad = true;
-                            // refreshData();
                           });
                           loadMoreBidsData();
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -457,7 +454,7 @@ class _TranstScreenState extends State<TranstScreen> {
                                                         // Use viewTransact and await the Future
                                                         await editTransact(
                                                             context,
-                                                            doc, 
+                                                            doc,
                                                             screenHeight,
                                                             screenWidth);
                                                         // After the Future completes (status change is done), reload the page

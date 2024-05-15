@@ -62,6 +62,7 @@ class _WthPointsScreenState extends State<WthPointsScreen> {
   Widget build(BuildContext context) {
     // Provider
     final taskData = Provider.of<TaskData>(context);
+    
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
     txnid = genUniqueCode(11);

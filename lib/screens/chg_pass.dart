@@ -1,3 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+import 'dart:math';
+
+import 'package:iconly/iconly.dart';
 import 'package:paytmmatka/mainscreen.dart';
 import 'package:paytmmatka/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,68 +10,31 @@ import 'package:paytmmatka/services/task_data.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AddUpiScreen extends StatefulWidget {
-  const AddUpiScreen({
+class ChgPassScreen extends StatefulWidget {
+  const ChgPassScreen({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<AddUpiScreen> createState() => _AddUpiScreenState();
+  State<ChgPassScreen> createState() => _ChgPassScreenState();
 }
 
-class _AddUpiScreenState extends State<AddUpiScreen> {
+class _ChgPassScreenState extends State<ChgPassScreen> {
+  TextEditingController newPassController = TextEditingController();
+  TextEditingController mPinController = TextEditingController();
+
   // Late variables
-  late TextEditingController bankController;
-  late TextEditingController achController;
-  late TextEditingController acnController;
-  late TextEditingController ifscController;
-  late TextEditingController paytmController;
-  late TextEditingController phonePeController;
-  late TextEditingController gPayController;
+  // late List<String> digitList;
   late SharedPreferences sharedPreferences;
+
+  // Get the current date
+  DateTime now = DateTime.now();
 
   double screenHeight = 0.0;
   double screenWidth = 0.0;
   bool circular = false;
+
   Color primary = Colors.blue.shade300;
-  // Get the current date
-  DateTime now = DateTime.now();
-
-  late Future<void> fetchDataFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    bankController = TextEditingController();
-    achController = TextEditingController();
-    acnController = TextEditingController();
-    ifscController = TextEditingController();
-    paytmController = TextEditingController();
-    phonePeController = TextEditingController();
-    gPayController = TextEditingController();
-
-    fetchDataFuture = fetchData();
-  }
-
-  Future<void> fetchData() async {
-    final taskData = Provider.of<TaskData>(context, listen: false);
-    QuerySnapshot snap = await FirebaseFirestore.instance
-        .collection('Users')
-        .where('id', isEqualTo: taskData.id)
-        .get();
-
-    if (snap.docs.isNotEmpty) {
-      setState(() {
-        bankController.text = snap.docs[0]['bank'] ?? '';
-        achController.text = snap.docs[0]['acctholder'] ?? '';
-        acnController.text = snap.docs[0]['acctno'].toString();
-        ifscController.text = snap.docs[0]['ifsc'].toString();
-        paytmController.text = snap.docs[0]['paytm'].toString();
-        phonePeController.text = snap.docs[0]['phonepe'].toString();
-        gPayController.text = snap.docs[0]['gpay'].toString();
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +63,7 @@ class _AddUpiScreenState extends State<AddUpiScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Payment Details',
+                'Change Password',
                 style: TextStyle(
                   fontFamily: 'Nexa Bold',
                   fontSize: screenWidth / 17,
@@ -120,43 +87,10 @@ class _AddUpiScreenState extends State<AddUpiScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Show to all
-                  customField('Bank Name', null, null, bankController, false,
-                      false, false, (value) {}),
-                  customField('Account Holder Name', null, null, achController,
-                      false, false, false, (value) {}),
-                  customField('Account Number', null, null, acnController,
-                      false, false, true, (value) {}),
-                  customField('IFSC Code', null, null, ifscController, false,
-                      false, true, (value) {}),
-                  customField('PayTm Number', null, null, paytmController,
-                      false, false, true, (value) {}),
-                  customField('PhonePe Number', null, null, phonePeController,
-                      false, false, true, (value) {}),
-                  customField('Google Pay Number', null, null, gPayController,
-                      false, false, true, (value) {}),
-                  Container(
-                    width: screenWidth,
-                    padding: const EdgeInsets.all(15),
-                    decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black26,
-                            blurRadius: 10,
-                            offset: Offset(2, 2),
-                          )
-                        ]),
-                    child: Text(
-                      'Fill all the information carefully, we are not responsible for any mistake.',
-                      style: TextStyle(
-                          fontFamily: 'Nexa Bold',
-                          fontSize: screenWidth / 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ),
-                  ),
+                  customField('Enter New Password', null, null,
+                      newPassController, false, false, false, (value) {}),
+                  customField('MPin', null, null, mPinController, true, false,
+                      true, (value) {}),
                   GestureDetector(
                     onTap: () async {
                       // Keypad closes
@@ -166,52 +100,12 @@ class _AddUpiScreenState extends State<AddUpiScreen> {
                         circular = true;
                       });
 
-                      // get the current mobileid
-                      QuerySnapshot snap = await FirebaseFirestore.instance
-                          .collection('Users')
-                          .where('id', isEqualTo: taskData.id)
-                          .get();
-
-                      try {
-                        await FirebaseFirestore.instance
-                            .collection('Users')
-                            .doc(snap.docs[0].id)
-                            .update({
-                          'bank': bankController.text.trim(),
-                          'acctholder': achController.text.trim(),
-                          'acctno': acnController.text.trim() != ''
-                              ? int.parse(acnController.text.trim())
-                              : 0,
-                          'ifsc': int.parse(ifscController.text.trim()),
-                          'paytm': int.parse(paytmController.text.trim()),
-                          'phonepe': int.parse(phonePeController.text.trim()),
-                          'gpay': int.parse(gPayController.text.trim()),
-                        }).then(
-                          (_) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                backgroundColor: Colors.blue.shade300,
-                                content: Text(
-                                  'Saved!',
-                                  style: TextStyle(
-                                    fontFamily: 'Nexa Light',
-                                    fontSize: screenWidth / 30,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            );
-                            setState(() {
-                              circular = false;
-                            });
-                          },
-                        );
-                      } catch (e) {
+                      if (newPassController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: Colors.blue.shade300,
                             content: Text(
-                              e.toString(),
+                              'New password can not be empty!',
                               style: TextStyle(
                                 fontFamily: 'Nexa Light',
                                 fontSize: screenWidth / 30,
@@ -220,6 +114,63 @@ class _AddUpiScreenState extends State<AddUpiScreen> {
                             ),
                           ),
                         );
+                        setState(() {
+                          circular = false;
+                        });
+                      } else if (taskData.mpin !=
+                          int.parse(mPinController.text.trim())) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.blue.shade300,
+                            content: Text(
+                              'Wrong mpin, try again!',
+                              style: TextStyle(
+                                fontFamily: 'Nexa Light',
+                                fontSize: screenWidth / 30,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        );
+                        setState(() {
+                          circular = false;
+                        });
+                      } else {
+                        // get the current mobileid
+                        QuerySnapshot snap = await FirebaseFirestore.instance
+                            .collection('Users')
+                            .where('id', isEqualTo: taskData.id)
+                            .get();
+
+                        try {
+                          await FirebaseFirestore.instance
+                              .collection('Users')
+                              .doc(snap.docs[0].id)
+                              .update({
+                            'pass': newPassController.text.toString(),
+                          }).then(
+                            (_) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Colors.blue.shade300,
+                                  content: Text(
+                                    'Success!',
+                                    style: TextStyle(
+                                      fontFamily: 'Nexa Light',
+                                      fontSize: screenWidth / 30,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              );
+                              setState(() {
+                                circular = false;
+                              });
+                            },
+                          );
+                        } catch (e) {
+                          // print(e.toString());
+                        }
                       }
                     },
                     child: Container(
@@ -238,7 +189,7 @@ class _AddUpiScreenState extends State<AddUpiScreen> {
                                 child: const CircularProgressIndicator(
                                     color: Colors.white))
                             : Text(
-                                'Save',
+                                'SUBMIT',
                                 style: TextStyle(
                                     fontFamily: 'Nexa Bold',
                                     fontSize: screenWidth / 26,
@@ -295,7 +246,7 @@ class _AddUpiScreenState extends State<AddUpiScreen> {
       TextEditingController? controller,
       bool obscure,
       bool readOnly,
-      bool numbersOnly,
+      numbersOnly,
       Function(String)? onChanged) {
     return Container(
       width: screenWidth,

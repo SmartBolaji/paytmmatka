@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/rpg_awesome_icons.dart';
 import 'package:page_transition/page_transition.dart';
@@ -8,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_year_picker/month_year_picker.dart';
+import 'package:paytmmatka/admin/results.dart';
 import 'package:paytmmatka/admin/transt.dart';
 import 'package:paytmmatka/admin/users.dart';
 import 'package:paytmmatka/services/task_data.dart';
@@ -27,9 +26,6 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
   late SharedPreferences sharedPreferences;
 
   QuerySnapshot? _snap;
-  QuerySnapshot? _snap1;
-  QuerySnapshot? _snap2;
-  QuerySnapshot? _snap3;
   bool circular = false;
   bool refreshCircle = false;
   bool refreshLoad = false;
@@ -68,7 +64,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
           await FirebaseFirestore.instance.collection(collection).get();
       return snap.docs.length;
     } catch (e) {
-      print(e.toString());
+      e.toString();
       return 0;
     }
   }
@@ -103,9 +99,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         }
       });
     } catch (e) {
-      Transform.scale(
-          scale: 0.5,
-          child: const CircularProgressIndicator(color: Colors.white));
+      e.toString();
     }
   }
 
@@ -133,9 +127,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         }
       });
     } catch (e) {
-      Transform.scale(
-          scale: 0.5,
-          child: const CircularProgressIndicator(color: Colors.white));
+      e.toString();
     }
   }
 
@@ -523,8 +515,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
             SizedBox(
               height: screenHeight / 50,
             ),
-            buildContainer('Users', userStats.toString(), Icons.person_outline,
-                () {
+            buildContainer('Users', userStats.toString(), Icons.person, () {
               Navigator.push(
                 context,
                 PageTransition(
@@ -566,6 +557,25 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                   context,
                   PageTransition(
                     child: const TranstScreen(),
+                    type: PageTransitionType.topToBottom,
+                    inheritTheme: true,
+                    ctx: context,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            buildContainer(
+              'Declare',
+              'Results',
+              Icons.announcement,
+              () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: const ResultsScreen(),
                     type: PageTransitionType.topToBottom,
                     inheritTheme: true,
                     ctx: context,

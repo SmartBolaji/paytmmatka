@@ -15,8 +15,8 @@ class TaskData extends ChangeNotifier {
   bool _showAd = true;
   bool _normal = true;
   bool _darkMode = false;
-  bool _arch = false;
-  bool _allarch = false;
+  int _snapSize = 0;
+  String _name = '';
   int _id = 123456789;
   double _points = 1100.0;
   int _mpin = 1234;
@@ -51,15 +51,15 @@ class TaskData extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get arch => _arch;
-  set arch(bool value) {
-    _arch = value;
+  int get snapSize => _snapSize;
+  set snapSize(int value) {
+    _snapSize = value;
     notifyListeners();
   }
 
-  bool get allarch => _allarch;
-  set allarch(bool value) {
-    _allarch = value;
+  String get name => _name;
+  set name(String value) {
+    _name = value;
     notifyListeners();
   }
 
@@ -187,6 +187,11 @@ class TaskData extends ChangeNotifier {
 
   void updateM5(context, String month) {
     _month5 = month;
+    notifyListeners();
+  }
+
+  void updateSnap1(context, int size) {
+    _snapSize = size;
     notifyListeners();
   }
 

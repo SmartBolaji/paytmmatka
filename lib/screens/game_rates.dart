@@ -1,22 +1,40 @@
+// ignore_for_file: use_build_context_synchronously
+import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:flutter/material.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:paytmmatka/mainscreen.dart';
-import 'package:paytmmatka/screens/chg_pass.dart';
-import 'package:paytmmatka/services/task_data.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class GameRatesScreen extends StatefulWidget {
+  const GameRatesScreen({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<GameRatesScreen> createState() => _ContactsScreenState();
+}
+
+class _ContactsScreenState extends State<GameRatesScreen> {
+  TextEditingController pointController = TextEditingController();
+
+  // Late variables
+  // late List<String> digitList;
+  late SharedPreferences sharedPreferences;
+
+  // Get the current date
+  DateTime now = DateTime.now();
+
+  double screenHeight = 0.0;
+  double screenWidth = 0.0;
+
+  Color primary = Colors.blue.shade300;
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   checkCharacterLimit();
+  // }
 
   @override
   Widget build(BuildContext context) {
-    // Provider
-    final taskData = Provider.of<TaskData>(context);
-
-    double screenHeight = 0.0;
-    double screenWidth = 0.0;
-
-    Color primary = Colors.blue.shade300;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
@@ -25,15 +43,7 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: Colors.blue.shade300,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              PageTransition(
-                child: MainScreen(),
-                type: PageTransitionType.topToBottom,
-                duration: const Duration(milliseconds: 500),
-                reverseDuration: const Duration(milliseconds: 500),
-              ),
-            );
+            Navigator.pop(context);
           },
           icon: Icon(
             Icons.arrow_back,
@@ -47,7 +57,7 @@ class ProfileScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Profile',
+                'Contact Us',
                 style: TextStyle(
                   fontFamily: 'Nexa Bold',
                   fontSize: screenWidth / 17,
@@ -59,67 +69,64 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.only(
-          left: 20,
-          right: 20,
-          bottom: 20,
-          top: 15,
-        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          // crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            customField(screenWidth, screenHeight, taskData.name,
-                Icons.account_circle, null, null, false, true, null),
-            customField(screenWidth, screenHeight, taskData.id.toString(),
-                Icons.phone_rounded, null, null, false, true, null),
-            onTapButton(screenWidth, screenHeight, 'Change Password',
-                Colors.grey.shade800, () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ChgPassScreen()));
-            }),
-            onTapButton(screenWidth, screenHeight, 'Logout', Colors.red, () {})
+            Container(
+              padding: const EdgeInsets.only(
+                top: 20,
+              ),
+              alignment: Alignment.centerLeft,
+              margin: EdgeInsets.symmetric(horizontal: screenWidth / 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  customField('Single Digit', Icons.circle, '10 - 95', null,
+                      false, true, null),
+                  SizedBox(
+                    height: screenHeight / 50,
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),
     );
   }
 
-  GestureDetector onTapButton(double screenWidth, double screenHeight,
-      String mainText, Color color, Function onTap) {
-    return GestureDetector(
-      onTap: () {
-        onTap();
-      },
-      child: Container(
-        height: 60,
-        width: screenWidth,
-        margin: EdgeInsets.only(top: screenHeight / 60),
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: const BorderRadius.all(Radius.circular(30)),
-        ),
-        child: Center(
-          child: Text(
-            mainText,
-            style: TextStyle(
-                fontFamily: 'Nexa Bold',
-                fontSize: screenWidth / 28,
-                color: Colors.white,
-                letterSpacing: 2),
-          ),
+  Widget fieldTitle(String title) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Text(
+        title,
+        style: TextStyle(fontSize: screenWidth / 26, fontFamily: 'Nexa Bold'),
+      ),
+    );
+  }
+
+  Widget fgtPass(String title, {required Function onTap}) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: GestureDetector(
+        onTap: () {
+          onTap();
+        },
+        child: Text(
+          title,
+          style: TextStyle(
+              fontSize: screenWidth / 30,
+              fontFamily: 'Nexa Bold',
+              color: Colors.blue.shade300),
         ),
       ),
     );
   }
 
   Widget customField(
-      double screenWidth,
-      double screenHeight,
       String hint,
       IconData? icon,
-      IconData? suffixicon,
+      String suffixtext,
       TextEditingController? controller,
       bool obscure,
       bool readOnly,
@@ -144,7 +151,7 @@ class ProfileScreen extends StatelessWidget {
                   width: screenWidth / 6,
                   child: Icon(
                     icon,
-                    color: Colors.blue.shade300,
+                    color: primary,
                     size: screenWidth / 15,
                   ),
                 )
@@ -179,16 +186,14 @@ class ProfileScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                           color: Colors.black)
                       : null,
-                  // suffixIcon: GestureDetector(
-                  //   onTap: () {
-                  //     onTap();
-                  //   },
-                  //   child: Icon(
-                  //     suffixicon,
-                  //     color: Colors.grey.shade600,
-                  //     size: screenWidth / 15,
-                  //   ),
-                  // ),
+                  suffix: Text(
+                    suffixtext,
+                    style: TextStyle(
+                        fontFamily: 'Nexa Bold',
+                        fontSize: screenWidth / 21,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black),
+                  ),
                 ),
                 maxLines: 1,
                 obscureText: obscure,

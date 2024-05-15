@@ -45,7 +45,7 @@ class AllTile extends StatelessWidget {
                   child: Icon(
                     FontAwesomeIcons.fileContract,
                     size: screenWidth / 17,
-                    color: Colors.blue.shade300,
+                    color: allisChecked ? Colors.red : Colors.blue.shade300,
                   ),
                 ),
               ],
@@ -58,8 +58,8 @@ class AllTile extends StatelessWidget {
                   allTitle,
                   style: TextStyle(
                       fontFamily: 'Nexa Bold',
-                      fontSize: screenWidth / 19,
-                      color: Colors.blue.shade300),
+                      fontSize: screenWidth / 20,
+                      color: allisChecked ? Colors.red : Colors.blue.shade300),
                 ),
                 Text(
                   allsub1,
@@ -86,9 +86,11 @@ class AllTile extends StatelessWidget {
                   height: screenHeight / 15, // Adjust size as needed
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.blue,
+                    color: allisChecked ? Colors.red : Colors.blue,
                     border: Border.all(
-                      color: Colors.blue, // Blue border
+                      color: allisChecked
+                          ? Colors.red
+                          : Colors.blue, // Blue border
                       width: 3, // Border width
                     ),
                   ),
@@ -113,9 +115,7 @@ class AllTile extends StatelessWidget {
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
             side: const BorderSide(color: Colors.black26)),
-        onTap: allisChecked
-            ? () {}
-            : () {
+        onTap:  () {
                 allonTapCallback();
               },
       ),

@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:iconly/iconly.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:paytmmatka/mainscreen.dart';
+import 'package:paytmmatka/screens/addpoints.dart';
 import 'package:paytmmatka/screens/chg_pass.dart';
+import 'package:paytmmatka/screens/transact.dart';
+import 'package:paytmmatka/screens/wthpoints.dart';
 import 'package:paytmmatka/services/task_data.dart';
 import 'package:provider/provider.dart';
 
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+class PointsScreen extends StatelessWidget {
+  const PointsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +20,7 @@ class ProfileScreen extends StatelessWidget {
     double screenHeight = 0.0;
     double screenWidth = 0.0;
 
-    Color primary = Colors.blue.shade300;
+    // Color primary = Colors.blue.shade300;
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
@@ -47,7 +51,7 @@ class ProfileScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Profile',
+                'Wallet',
                 style: TextStyle(
                   fontFamily: 'Nexa Bold',
                   fontSize: screenWidth / 17,
@@ -68,18 +72,34 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            customField(screenWidth, screenHeight, taskData.name,
-                Icons.account_circle, null, null, false, true, null),
-            customField(screenWidth, screenHeight, taskData.id.toString(),
-                Icons.phone_rounded, null, null, false, true, null),
-            onTapButton(screenWidth, screenHeight, 'Change Password',
-                Colors.grey.shade800, () {
+            // customField(screenWidth, screenHeight, taskData.name,
+            //     Icons.account_circle, null, null, false, true, null),
+            customField(screenWidth, screenHeight, taskData.points.toString(),
+                IconlyBold.wallet, null, null, false, true, null),
+            onTapButton(
+                screenWidth, screenHeight, 'Add Fund', Colors.grey.shade800,
+                () {
               Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const ChgPassScreen()));
+                      builder: (context) => const AddPointsScreen()));
             }),
-            onTapButton(screenWidth, screenHeight, 'Logout', Colors.red, () {})
+            onTapButton(
+                screenWidth, screenHeight, 'Withdraw', Colors.grey.shade800,
+                () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const WthPointsScreen()));
+            }),
+            onTapButton(
+                screenWidth, screenHeight, 'Transaction', Colors.grey.shade800,
+                () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const TransactScreen()));
+            }),
           ],
         ),
       ),

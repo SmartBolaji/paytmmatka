@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:paytmmatka/widgets/edit_games.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GamesScreen extends StatefulWidget {
@@ -20,7 +21,6 @@ class _GamesScreenState extends State<GamesScreen> {
   late SharedPreferences sharedPreferences;
 
   QuerySnapshot? _snap;
-  DocumentReference? _snapReference;
   bool circular = false;
   bool refreshCircle = false;
   // Market details
@@ -244,10 +244,14 @@ class _GamesScreenState extends State<GamesScreen> {
                             .collection('Games')
                             .doc(mrkName)
                             .set({
-                          'mrkName': mrkName,
-                          'mrkOpen': _mrkOpenTime,
-                          'mrkClose': _mrkCloseTime,
+                          'mrkname': mrkName,
+                          'mrkopen': _mrkOpenTime,
+                          'mrkclose': _mrkCloseTime,
                           'created': DateTime.now(),
+                          'digit': 0,
+                          'openpana': 0,
+                          'closepana': 0,
+                          'updated': DateTime.now(),
                           'status': 'Active',
                         }).then(
                           (_) {
@@ -426,11 +430,11 @@ class _GamesScreenState extends State<GamesScreen> {
                                           _snap!.size,
                                           (index) {
                                             final doc = _snap!.docs[index];
-                                            allMrkName = doc.get('mrkName');
-                                            allMrkOpen = doc.get('mrkOpen');
-                                            allMrkClose = doc.get('mrkClose');
+                                            allMrkName = doc.get('mrkname');
+                                            allMrkOpen = doc.get('mrkopen');
+                                            allMrkClose = doc.get('mrkclose');
                                             allMrkStatus = doc.get('status');
-
+                                            // doc.reference.update(({ 'digit': 1000, 'openpana': 1000, 'closepana': 1000,}));
                                             return Table(
                                               border: const TableBorder(
                                                 verticalInside: BorderSide(
@@ -460,10 +464,17 @@ class _GamesScreenState extends State<GamesScreen> {
                                                   allMrkOpen,
                                                   allMrkClose,
                                                   allMrkStatus
-                                                ],
-                                                    isHeader: false,
-                                                    rowIndex: 1,
-                                                    onTap: () {}),
+                                                ], isHeader: false, rowIndex: 1,
+                                                    onTap: () async {
+                                                  // Use viewTransact and await the Future
+                                                  await editGames(
+                                                      context,
+                                                      doc,
+                                                      screenHeight,
+                                                      screenWidth);
+                                                  // After the Future completes (status change is done), reload the page
+                                                  refreshData();
+                                                }),
                                               ],
                                             );
                                           },

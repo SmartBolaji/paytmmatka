@@ -3,12 +3,14 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/widgets.dart';
 import 'package:fluttericon/rpg_awesome_icons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:flutter/material.dart';
 import 'package:paytmmatka/screens/bids.dart';
+import 'package:paytmmatka/screens/points.dart';
 import 'package:paytmmatka/services/task_data.dart';
 import 'package:paytmmatka/widgets/alert.dart';
 import 'package:provider/provider.dart';
@@ -142,24 +144,37 @@ class _PlaySetUpScreenState extends State<PlaySetUpScreen> {
                   color: Colors.white,
                 ),
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Icon(
-                    IconlyBold.wallet,
-                    size: screenWidth / 15,
-                    color: Colors.blue.shade50,
-                  ),
-                  const SizedBox(
-                    width: 5,
-                  ),
-                  Text(taskData.points.toString(),
-                      style: TextStyle(
-                          fontFamily: 'Nexa Bold',
-                          fontSize: screenWidth / 22,
-                          color: Colors.white)),
-                ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageTransition(
+                      child: const PointsScreen(),
+                      type: PageTransitionType.rightToLeft,
+                      duration: const Duration(milliseconds: 500),
+                      reverseDuration: const Duration(milliseconds: 500),
+                    ),
+                  );
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Icon(
+                      IconlyBold.wallet,
+                      size: screenWidth / 15,
+                      color: Colors.blue.shade50,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Text(taskData.points.toString(),
+                        style: TextStyle(
+                            fontFamily: 'Nexa Bold',
+                            fontSize: screenWidth / 22,
+                            color: Colors.white)),
+                  ],
+                ),
               )
             ],
           ),
@@ -402,6 +417,7 @@ class _PlaySetUpScreenState extends State<PlaySetUpScreen> {
                             'openpana': oPana,
                             'closepana': cPana,
                             'points': double.parse(pointController.text.trim()),
+                            'status': 'Booked',
                             'created': DateTime.now(),
                             'trackid': trackid,
                           }).then(
@@ -430,7 +446,7 @@ class _PlaySetUpScreenState extends State<PlaySetUpScreen> {
                             },
                           );
                         } catch (e) {
-                          print(e.toString());
+                          e.toString();
                         }
                       }
                     },

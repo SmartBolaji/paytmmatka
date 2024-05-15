@@ -34,7 +34,7 @@ class _PlayScreenState extends State<PlayScreen> {
             Navigator.push(
               context,
               PageTransition(
-                child:  MainScreen(),
+                child:  const MainScreen(),
                 type: PageTransitionType.topToBottom,
                 duration: const Duration(milliseconds: 500),
                 reverseDuration: const Duration(milliseconds: 500),

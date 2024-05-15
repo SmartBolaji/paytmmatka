@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:paytmmatka/services/task_data.dart';
-import 'package:paytmmatka/widgets/view_bid.dart';
 import 'package:paytmmatka/widgets/view_transact.dart';
 import 'package:provider/provider.dart';
 
