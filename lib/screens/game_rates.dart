@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-import 'package:fluttericon/font_awesome_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,7 +15,6 @@ class _ContactsScreenState extends State<GameRatesScreen> {
   TextEditingController pointController = TextEditingController();
 
   // Late variables
-  // late List<String> digitList;
   late SharedPreferences sharedPreferences;
 
   // Get the current date
@@ -57,7 +55,7 @@ class _ContactsScreenState extends State<GameRatesScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Contact Us',
+                'Game Rates',
                 style: TextStyle(
                   fontFamily: 'Nexa Bold',
                   fontSize: screenWidth / 17,
@@ -82,6 +80,18 @@ class _ContactsScreenState extends State<GameRatesScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   customField('Single Digit', Icons.circle, '10 - 95', null,
+                      false, true, null),
+                  customField('Jodi Digit', Icons.circle, '10 - 950', null,
+                      false, true, null),
+                  customField('Single Pana', Icons.circle, '10 - 1400', null,
+                      false, true, null),
+                  customField('Double Pana', Icons.circle, '10 - 2800', null,
+                      false, true, null),
+                  customField('Triple Pana', Icons.circle, '10 - 10000', null,
+                      false, true, null),
+                  customField('Half Sangam', Icons.circle, '10 - 12000', null,
+                      false, true, null),
+                  customField('Full Sangam', Icons.circle, '10 - 120000', null,
                       false, true, null),
                   SizedBox(
                     height: screenHeight / 50,
@@ -133,6 +143,9 @@ class _ContactsScreenState extends State<GameRatesScreen> {
       Function(String)? onChanged) {
     return Container(
       width: screenWidth,
+      padding: EdgeInsets.symmetric(
+        vertical: readOnly ? screenHeight / 35 : screenHeight / 50,
+      ),
       margin: const EdgeInsets.only(bottom: 12),
       decoration: const BoxDecoration(
           color: Colors.white,
@@ -160,48 +173,31 @@ class _ContactsScreenState extends State<GameRatesScreen> {
                 ),
           Expanded(
             child: Padding(
-              padding: EdgeInsets.only(right: screenWidth / 30),
-              child: TextFormField(
-                style: TextStyle(
-                    fontFamily: 'Nexa Light',
-                    fontSize: screenWidth / 21,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black),
-                controller: controller,
-                enableSuggestions: false,
-                autocorrect: false,
-                readOnly: readOnly,
-                // maxLength: 2,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: readOnly ? screenHeight / 35 : screenHeight / 50,
-                  ),
-                  border: InputBorder.none,
-                  hintText: hint,
-                  hintStyle: readOnly
-                      ? TextStyle(
+                padding: EdgeInsets.only(right: screenWidth / 30),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      hint,
+                      style: TextStyle(
                           fontFamily: 'Nexa Bold',
                           fontSize: screenWidth / 21,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black)
-                      : null,
-                  suffix: Text(
-                    suffixtext,
-                    style: TextStyle(
-                        fontFamily: 'Nexa Bold',
-                        fontSize: screenWidth / 21,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                ),
-                maxLines: 1,
-                obscureText: obscure,
-                onChanged: (newChange) {
-                  onChanged!(newChange);
-                },
-              ),
-            ),
+                          color: Colors.black),
+                    ),
+                    // SizedBox(
+                    //   height: screenHeight / 30,
+                    // ),
+                    Text(
+                      suffixtext,
+                      style: TextStyle(
+                          fontFamily: 'Nexa Bold',
+                          fontSize: screenWidth / 21,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    )
+                  ],
+                )),
           )
         ],
       ),

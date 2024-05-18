@@ -1,9 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fluttericon/rpg_awesome_icons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:intl/intl.dart';
@@ -18,12 +16,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PlaySetUpScreen extends StatefulWidget {
   final String mainTitle;
+  final String mainSection;
   final String playType;
   final int playId;
 
   const PlaySetUpScreen(
       {Key? key,
       required this.mainTitle,
+      required this.mainSection,
       required this.playType,
       required this.playId})
       : super(key: key);
@@ -411,6 +411,7 @@ class _PlaySetUpScreenState extends State<PlaySetUpScreen> {
                             'id': taskData.id,
                             'market': widget.mainTitle,
                             'mrktype': widget.playType,
+                            'mrksection': widget.mainSection,
                             'session':
                                 select0 == 'Choose Session' ? '' : select0,
                             'digit': digit,

@@ -8,8 +8,10 @@ import 'package:paytmmatka/widgets/play_option_tile.dart';
 
 class PlayScreen extends StatefulWidget {
   final String mainTitle;
+  final String mainSection;
 
-  const PlayScreen({super.key, required this.mainTitle});
+  const PlayScreen(
+      {super.key, required this.mainTitle, required this.mainSection});
 
   @override
   State<PlayScreen> createState() => _PlayScreenState();
@@ -34,7 +36,7 @@ class _PlayScreenState extends State<PlayScreen> {
             Navigator.push(
               context,
               PageTransition(
-                child:  const MainScreen(),
+                child: const MainScreen(),
                 type: PageTransitionType.topToBottom,
                 duration: const Duration(milliseconds: 500),
                 reverseDuration: const Duration(milliseconds: 500),
@@ -85,6 +87,7 @@ class _PlayScreenState extends State<PlayScreen> {
                   PageTransition(
                     child: PlaySetUpScreen(
                       mainTitle: widget.mainTitle,
+                      mainSection: widget.mainSection,
                       playType: 'Single Digit',
                       playId: 0,
                     ),
@@ -98,38 +101,43 @@ class _PlayScreenState extends State<PlayScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                PlayOptionTile(
-                  allicon1: FontAwesome5.dice,
-                  allicon2: null,
-                  allsub1: 'Jodi',
-                  allsub2: 'Digit',
-                  allonTapCallback: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        child: PlaySetUpScreen(
-                          mainTitle: widget.mainTitle,
-                          playType: 'Jodi Digit',
-                          playId: 1,
-                        ),
-                        type: PageTransitionType.leftToRight,
-                        duration: const Duration(milliseconds: 500),
-                        reverseDuration: const Duration(milliseconds: 500),
-                      ),
-                    );
-                  },
-                ),
+                widget.mainSection == 'Mumbai'
+                    ? PlayOptionTile(
+                        allicon1: FontAwesome5.dice,
+                        allicon2: null,
+                        allsub1: 'Jodi',
+                        allsub2: 'Digit',
+                        allonTapCallback: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: PlaySetUpScreen(
+                                mainTitle: widget.mainTitle,
+                                mainSection: widget.mainSection,
+                                playType: 'Jodi Digit',
+                                playId: 1,
+                              ),
+                              type: PageTransitionType.leftToRight,
+                              duration: const Duration(milliseconds: 500),
+                              reverseDuration:
+                                  const Duration(milliseconds: 500),
+                            ),
+                          );
+                        },
+                      )
+                    : const SizedBox(),
                 PlayOptionTile(
                   allicon1: RpgAwesome.spades_card,
                   allicon2: RpgAwesome.perspective_dice_one,
                   allsub1: 'Single',
-                  allsub2: 'Panna',
+                  allsub2: 'Pana',
                   allonTapCallback: () {
                     Navigator.push(
                       context,
                       PageTransition(
                         child: PlaySetUpScreen(
                           mainTitle: widget.mainTitle,
+                          mainSection: widget.mainSection,
                           playType: 'Single Pana',
                           playId: 2,
                         ),
@@ -149,13 +157,14 @@ class _PlayScreenState extends State<PlayScreen> {
                   allicon1: RpgAwesome.spades_card,
                   allicon2: FontAwesome5.dice,
                   allsub1: 'Double',
-                  allsub2: 'Panna',
+                  allsub2: 'Pana',
                   allonTapCallback: () {
                     Navigator.push(
                       context,
                       PageTransition(
                         child: PlaySetUpScreen(
                           mainTitle: widget.mainTitle,
+                          mainSection: widget.mainSection,
                           playType: 'Double Pana',
                           playId: 3,
                         ),
@@ -170,13 +179,14 @@ class _PlayScreenState extends State<PlayScreen> {
                   allicon1: RpgAwesome.perspective_dice_one,
                   allicon2: FontAwesome5.dice,
                   allsub1: 'Triple',
-                  allsub2: 'Panna',
+                  allsub2: 'Pana',
                   allonTapCallback: () {
                     Navigator.push(
                       context,
                       PageTransition(
                         child: PlaySetUpScreen(
                           mainTitle: widget.mainTitle,
+                          mainSection: widget.mainSection,
                           playType: 'Triple Pana',
                           playId: 4,
                         ),
@@ -189,53 +199,59 @@ class _PlayScreenState extends State<PlayScreen> {
                 )
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                PlayOptionTile(
-                  allicon1: RpgAwesome.diamonds_card,
-                  allicon2: FontAwesome5.dice_four,
-                  allsub1: 'Half',
-                  allsub2: 'Sangam',
-                  allonTapCallback: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        child: PlaySetUpScreen(
-                          mainTitle: widget.mainTitle,
-                          playType: 'Half Sangam',
-                          playId: 5,
-                        ),
-                        type: PageTransitionType.leftToRight,
-                        duration: const Duration(milliseconds: 500),
-                        reverseDuration: const Duration(milliseconds: 500),
+            widget.mainSection == 'Mumbai'
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      PlayOptionTile(
+                        allicon1: RpgAwesome.diamonds_card,
+                        allicon2: FontAwesome5.dice_four,
+                        allsub1: 'Half',
+                        allsub2: 'Sangam',
+                        allonTapCallback: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: PlaySetUpScreen(
+                                mainTitle: widget.mainTitle,
+                                mainSection: widget.mainSection,
+                                playType: 'Half Sangam',
+                                playId: 5,
+                              ),
+                              type: PageTransitionType.leftToRight,
+                              duration: const Duration(milliseconds: 500),
+                              reverseDuration:
+                                  const Duration(milliseconds: 500),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
-                PlayOptionTile(
-                  allicon1: RpgAwesome.diamonds_card,
-                  allicon2: RpgAwesome.diamonds_card,
-                  allsub1: 'Full',
-                  allsub2: 'Sangam',
-                  allonTapCallback: () {
-                    Navigator.push(
-                      context,
-                      PageTransition(
-                        child: PlaySetUpScreen(
-                          mainTitle: widget.mainTitle,
-                          playType: 'Full Sangam',
-                          playId: 6,
-                        ),
-                        type: PageTransitionType.leftToRight,
-                        duration: const Duration(milliseconds: 500),
-                        reverseDuration: const Duration(milliseconds: 500),
-                      ),
-                    );
-                  },
-                )
-              ],
-            ),
+                      PlayOptionTile(
+                        allicon1: RpgAwesome.diamonds_card,
+                        allicon2: RpgAwesome.diamonds_card,
+                        allsub1: 'Full',
+                        allsub2: 'Sangam',
+                        allonTapCallback: () {
+                          Navigator.push(
+                            context,
+                            PageTransition(
+                              child: PlaySetUpScreen(
+                                mainTitle: widget.mainTitle,
+                                mainSection: widget.mainSection,
+                                playType: 'Full Sangam',
+                                playId: 6,
+                              ),
+                              type: PageTransitionType.leftToRight,
+                              duration: const Duration(milliseconds: 500),
+                              reverseDuration:
+                                  const Duration(milliseconds: 500),
+                            ),
+                          );
+                        },
+                      )
+                    ],
+                  )
+                : const SizedBox(),
           ],
         ),
       ),

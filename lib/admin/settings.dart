@@ -1,52 +1,74 @@
-import 'package:iconly/iconly.dart';
-import 'package:paytmmatka/mainscreen.dart';
-import 'package:paytmmatka/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:paytmmatka/services/task_data.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AddPointsScreen extends StatefulWidget {
-  const AddPointsScreen({
+class AdminSettings extends StatefulWidget {
+  const AdminSettings({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<AddPointsScreen> createState() => _AddPointsScreenState();
+  State<AdminSettings> createState() => _AdminSettingsState();
 }
 
-class _AddPointsScreenState extends State<AddPointsScreen> {
-  TextEditingController pointController = TextEditingController();
-
+class _AdminSettingsState extends State<AdminSettings> {
   // Late variables
-  // late List<String> digitList;
-  late SharedPreferences sharedPreferences;
-
-  // Get the current date
-  DateTime now = DateTime.now();
+  late TextEditingController adminController;
+  late TextEditingController alertController;
+  // late TextEditingController acnController;
+  // late TextEditingController ifscController;
+  // late TextEditingController paytmController;
+  // late TextEditingController phonePeController;
+  // late TextEditingController gPayController;
+  // late SharedPreferences sharedPreferences;
 
   double screenHeight = 0.0;
   double screenWidth = 0.0;
-
+  bool circular = false;
   Color primary = Colors.blue.shade300;
+  // Get the current date
+  DateTime now = DateTime.now();
 
-  // Session
-  String select0 = 'Payment Method';
+  late Future<void> fetchDataFuture;
 
-  List<String> payList = [
-    'Payment Method',
-    'Google Pay',
-    'Phone Pe',
-    'PayTm',
-  ];
+  @override
+  void initState() {
+    super.initState();
+    adminController = TextEditingController();
+    alertController = TextEditingController();
+    // acnController = TextEditingController();
+    // ifscController = TextEditingController();
+    // paytmController = TextEditingController();
+    // phonePeController = TextEditingController();
+    // gPayController = TextEditingController();
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   checkCharacterLimit();
-  // }
+    fetchDataFuture = fetchData();
+  }
+
+  Future<void> fetchData() async {
+    QuerySnapshot snap =
+        await FirebaseFirestore.instance.collection('Settings').get();
+
+    if (snap.docs[0].exists) {
+      setState(() {
+        adminController.text = snap.docs[0]['adminid'].toString();
+        alertController.text = snap.docs[0]['alertmsg'] ?? '';
+        // acnController.text = snap.docs[0]['acctno'].toString();
+        // ifscController.text = snap.docs[0]['ifsc'].toString();
+        // paytmController.text = snap.docs[0]['paytm'].toString();
+        // phonePeController.text = snap.docs[0]['phonepe'].toString();
+        // gPayController.text = snap.docs[0]['gpay'].toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Provider
+    final taskData = Provider.of<TaskData>(context);
+
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
@@ -69,7 +91,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Add Fund',
+                'Settings',
                 style: TextStyle(
                   fontFamily: 'Nexa Bold',
                   fontSize: screenWidth / 17,
@@ -94,85 +116,105 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Show to all
-                  customField('Enter Point', null, null, pointController, false,
-                      false, (value) {}),
-                  customField('Minimum Deposit is 500', IconlyBold.message,
-                      null, null, false, true, null),
-                  customSelect(context, payList, select0, (String sel) {
-                    setState(() {
-                      select0 = sel;
-                      print('Result: $select0');
-                    });
-                  }),
+                  customField('Admin ID', null, null, adminController, false,
+                      false, false, (value) {}),
+                  customField('Message', null, null, alertController, false,
+                      false, false, (value) {}),
+                  // customField('Account Number', null, null, acnController,
+                  //     false, false, true, (value) {}),
+                  // customField('IFSC Code', null, null, ifscController, false,
+                  //     false, true, (value) {}),
+                  // customField('PayTm Number', null, null, paytmController,
+                  //     false, false, true, (value) {}),
+                  // customField('PhonePe Number', null, null, phonePeController,
+                  //     false, false, true, (value) {}),
+                  // customField('Google Pay Number', null, null, gPayController,
+                  //     false, false, true, (value) {}),
+                  Container(
+                    width: screenWidth,
+                    padding: const EdgeInsets.all(15),
+                    decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10,
+                            offset: Offset(2, 2),
+                          )
+                        ]),
+                    child: Text(
+                      'Fill all the information carefully, we are not responsible for any mistake.',
+                      style: TextStyle(
+                          fontFamily: 'Nexa Bold',
+                          fontSize: screenWidth / 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
+                  ),
                   GestureDetector(
                     onTap: () async {
                       // Keypad closes
                       FocusScope.of(context).unfocus();
 
-                      String id = pointController.text.trim();
-                      String password = pointController.text.trim();
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          backgroundColor: Colors.blue.shade300,
-                          content: Text(
-                            'Unavailable, try again later!',
-                            style: TextStyle(
-                              fontFamily: 'Nexa Light',
-                              fontSize: screenWidth / 30,
-                              color: Colors.white,
+                      setState(() {
+                        circular = true;
+                      });
+
+                      // get the current mobileid
+                      QuerySnapshot snap = await FirebaseFirestore.instance
+                          .collection('Settings')
+                          .get();
+
+                      try {
+                        await FirebaseFirestore.instance
+                            .collection('Settings')
+                            .doc(snap.docs[0].id)
+                            .update({
+                          'adminid': int.parse(adminController.text.trim()),
+                          'alertmsg': alertController.text.trim(),
+                          // 'acctno': acnController.text.trim() != ''
+                          //     ? int.parse(acnController.text.trim())
+                          //     : 0,
+                          // 'ifsc': int.parse(ifscController.text.trim()),
+                          // 'paytm': int.parse(paytmController.text.trim()),
+                          // 'phonepe': int.parse(phonePeController.text.trim()),
+                          // 'gpay': int.parse(gPayController.text.trim()),
+                        }).then(
+                          (_) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.blue.shade300,
+                                content: Text(
+                                  'Saved!',
+                                  style: TextStyle(
+                                    fontFamily: 'Nexa Light',
+                                    fontSize: screenWidth / 30,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            );
+                            setState(() {
+                              circular = false;
+                            });
+                          },
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.blue.shade300,
+                            content: Text(
+                              e.toString(),
+                              style: TextStyle(
+                                fontFamily: 'Nexa Light',
+                                fontSize: screenWidth / 30,
+                                color: Colors.white,
+                              ),
                             ),
-                          )));
-                      // if (id.isEmpty) {
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //       const SnackBar(
-                      //           content: Text('Employee id is empty!')));
-                      // } else if (password.isEmpty) {
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //       const SnackBar(
-                      //           content: Text('Password is empty!')));
-                      // } else {
-                      //   QuerySnapshot snap = await FirebaseFirestore.instance
-                      //       .collection('Employee')
-                      //       .where('id', isEqualTo: id)
-                      //       .get();
-
-                      //   try {
-                      //     if (password == snap.docs[0]['password']) {
-                      //       User.employeeid = id;
-
-                      //       sharedPreferences =
-                      //           await SharedPreferences.getInstance();
-
-                      //       sharedPreferences
-                      //           .setString('employeeid', id)
-                      //           .then((_) {
-                      //         Navigator.pushReplacement(
-                      //             context,
-                      //             MaterialPageRoute(
-                      //                 builder: (context) =>
-                      //                      const MainScreen()));
-                      //       });
-                      //     } else {
-                      //       ScaffoldMessenger.of(context).showSnackBar(
-                      //           const SnackBar(
-                      //               content: Text('Password is not correct!')));
-                      //     }
-                      //   } catch (e) {
-                      //     String error = '';
-
-                      //     if (e.toString() ==
-                      //         'RangeError (index): Invalid value: Valid value range is empty: 0') {
-                      //       setState(() {
-                      //         error = 'Employee id does not exist!';
-                      //       });
-                      //     } else {
-                      //       setState(() {
-                      //         error = 'Error occurred!';
-                      //       });
-                      //     }
-                      //     ScaffoldMessenger.of(context)
-                      //         .showSnackBar(SnackBar(content: Text(error)));
-                      //   }
-                      // }
+                          ),
+                        );
+                      }
                     },
                     child: Container(
                       height: 60,
@@ -184,14 +226,19 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                             const BorderRadius.all(Radius.circular(30)),
                       ),
                       child: Center(
-                        child: Text(
-                          'SUBMIT',
-                          style: TextStyle(
-                              fontFamily: 'Nexa Bold',
-                              fontSize: screenWidth / 26,
-                              color: Colors.white,
-                              letterSpacing: 2),
-                        ),
+                        child: circular
+                            ? Transform.scale(
+                                scale: 0.5,
+                                child: const CircularProgressIndicator(
+                                    color: Colors.white))
+                            : Text(
+                                'Save',
+                                style: TextStyle(
+                                    fontFamily: 'Nexa Bold',
+                                    fontSize: screenWidth / 26,
+                                    color: Colors.white,
+                                    letterSpacing: 2),
+                              ),
                       ),
                     ),
                   ),
@@ -242,6 +289,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       TextEditingController? controller,
       bool obscure,
       bool readOnly,
+      bool numbersOnly,
       Function(String)? onChanged) {
     return Container(
       width: screenWidth,
@@ -284,7 +332,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                 autocorrect: false,
                 readOnly: readOnly,
                 // maxLength: 2,
-                keyboardType: TextInputType.number,
+                keyboardType: numbersOnly ? TextInputType.number : null,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(
                     vertical: readOnly ? screenHeight / 35 : screenHeight / 50,

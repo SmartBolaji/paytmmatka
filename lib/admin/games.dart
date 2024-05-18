@@ -25,6 +25,7 @@ class _GamesScreenState extends State<GamesScreen> {
   bool refreshCircle = false;
   // Market details
   String allMrkName = '';
+  String allMrkSection = '';
   String allMrkOpen = '';
   String allMrkClose = '';
   String allMrkStatus = '';
@@ -36,6 +37,15 @@ class _GamesScreenState extends State<GamesScreen> {
   double screenWidth = 0.0;
 
   Color primary = Colors.blue.shade300;
+
+  // Session
+  String select0 = 'Choose Game';
+
+  List<String> gameList = [
+    'Choose Game',
+    'Starlne',
+    'Mumbai',
+  ];
 
   // Function
 
@@ -144,6 +154,11 @@ class _GamesScreenState extends State<GamesScreen> {
                   ),
                   customField('Market Name', null, null, mrkNameController,
                       false, false, (value) {}),
+                  customSelect(context, gameList, select0, (String sel) {
+                    setState(() {
+                      select0 = sel;
+                    });
+                  }),
                   customTime(
                     _mrkOpenTime,
                     () async {
@@ -245,6 +260,7 @@ class _GamesScreenState extends State<GamesScreen> {
                             .doc(mrkName)
                             .set({
                           'mrkname': mrkName,
+                          'mrksection': select0,
                           'mrkopen': _mrkOpenTime,
                           'mrkclose': _mrkCloseTime,
                           'created': DateTime.now(),
@@ -390,7 +406,7 @@ class _GamesScreenState extends State<GamesScreen> {
                       scrollDirection: Axis.vertical,
                       child: SizedBox(
                         // padding: const EdgeInsets.only(left: 2, right: 2),
-                        width: 500,
+                        width: 700,
                         child: // Use ListView to display games
                             _snap != null
                                 ? Column(
@@ -411,6 +427,7 @@ class _GamesScreenState extends State<GamesScreen> {
                                               buildRow([
                                                 '#',
                                                 'Game\nName',
+                                                'Section',
                                                 'Today\nOpen',
                                                 'Today\nClose',
                                                 'Market\nStatus'
@@ -431,6 +448,8 @@ class _GamesScreenState extends State<GamesScreen> {
                                           (index) {
                                             final doc = _snap!.docs[index];
                                             allMrkName = doc.get('mrkname');
+                                            allMrkSection =
+                                                doc.get('mrksection');
                                             allMrkOpen = doc.get('mrkopen');
                                             allMrkClose = doc.get('mrkclose');
                                             allMrkStatus = doc.get('status');
@@ -461,6 +480,7 @@ class _GamesScreenState extends State<GamesScreen> {
                                                 buildRow([
                                                   '${index + 1}',
                                                   allMrkName,
+                                                  allMrkSection,
                                                   allMrkOpen,
                                                   allMrkClose,
                                                   allMrkStatus
@@ -705,6 +725,69 @@ class _GamesScreenState extends State<GamesScreen> {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget customSelect(BuildContext context, List<String>? items,
+      String valueAll, Function(String) onChanged) {
+    return Container(
+      width: screenWidth,
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(12)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 10,
+              offset: Offset(2, 2),
+            )
+          ]),
+      child: Row(
+        children: [
+          SizedBox(
+            width: screenWidth / 10,
+          ),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(right: screenWidth / 30),
+              child: DropdownButton<String>(
+                dropdownColor: Colors.grey.shade200,
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(12),
+                ),
+                hint: Text(
+                  valueAll,
+                  style: TextStyle(
+                      fontFamily: 'Nexa Light',
+                      fontSize: screenWidth / 21,
+                      // fontWeight: FontWeight.bold,
+                      color: Colors.black),
+                ),
+                value: valueAll,
+                isExpanded: true,
+                underline: Container(),
+                onChanged: (newCat) {
+                  onChanged(newCat!);
+                },
+                items: items!.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value,
+                        style: TextStyle(
+                            fontFamily: 'Nexa Light',
+                            fontSize: screenWidth / 21,
+                            // fontWeight: FontWeight.bold,
+                            color: value != valueAll
+                                ? Colors.black
+                                : Colors.blue.shade800)),
+                  );
+                }).toList(),
+              ),
+            ),
+          )
+        ],
       ),
     );
   }

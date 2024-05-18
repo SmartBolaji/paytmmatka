@@ -10,16 +10,18 @@ import 'package:paytmmatka/services/task_data.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ChgPassScreen extends StatefulWidget {
-  const ChgPassScreen({
+class ForgetPassScreen extends StatefulWidget {
+  const ForgetPassScreen({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<ChgPassScreen> createState() => _ChgPassScreenState();
+  State<ForgetPassScreen> createState() => _ForgetPassScreenState();
 }
 
-class _ChgPassScreenState extends State<ChgPassScreen> {
+class _ForgetPassScreenState extends State<ForgetPassScreen> {
+  TextEditingController idController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
   TextEditingController newPassController = TextEditingController();
   TextEditingController mPinController = TextEditingController();
 
@@ -35,8 +37,11 @@ class _ChgPassScreenState extends State<ChgPassScreen> {
   bool pass = true;
   bool mpass = true;
   bool circular = false;
+
   // Valid variables
+  int _id = 0;
   String _password = '';
+  String _name = '';
   int _mPin = 0;
 
   Color primary = Colors.blue.shade300;
@@ -68,7 +73,7 @@ class _ChgPassScreenState extends State<ChgPassScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Change Password',
+                'Forgot Password',
                 style: TextStyle(
                   fontFamily: 'Nexa Bold',
                   fontSize: screenWidth / 17,
@@ -92,6 +97,18 @@ class _ChgPassScreenState extends State<ChgPassScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  customField('Enter Number', null, null, idController, false,
+                      false, false, (value) {
+                    setState(() {
+                      _id = int.parse(value);
+                    });
+                  }, null),
+                  customField('Enter Name', null, null, nameController, false,
+                      false, false, (value) {
+                    setState(() {
+                      _name = value;
+                    });
+                  }, null),
                   customField(
                       'Enter New Password',
                       null,
@@ -133,30 +150,15 @@ class _ChgPassScreenState extends State<ChgPassScreen> {
                         circular = true;
                       });
 
-                      if (newPassController.text.isEmpty) {
+                      if (_id == 0 ||
+                          _password == '' ||
+                          _name == '' ||
+                          _mPin == 0) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             backgroundColor: Colors.blue.shade300,
                             content: Text(
-                              'New password can not be empty!',
-                              style: TextStyle(
-                                fontFamily: 'Nexa Light',
-                                fontSize: screenWidth / 30,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        );
-                        setState(() {
-                          circular = false;
-                        });
-                      } else if (taskData.mpin !=
-                          int.parse(mPinController.text.trim())) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            backgroundColor: Colors.blue.shade300,
-                            content: Text(
-                              'Wrong mpin, try again!',
+                              'A value is missing, complete the entire fields and try again!',
                               style: TextStyle(
                                 fontFamily: 'Nexa Light',
                                 fontSize: screenWidth / 30,
@@ -172,22 +174,47 @@ class _ChgPassScreenState extends State<ChgPassScreen> {
                         // get the current mobileid
                         QuerySnapshot snap = await FirebaseFirestore.instance
                             .collection('Users')
-                            .where('id', isEqualTo: taskData.id)
+                            .where('id', isEqualTo: _id)
                             .get();
 
                         try {
-                          await FirebaseFirestore.instance
-                              .collection('Users')
-                              .doc(snap.docs[0].id)
-                              .update({
-                            'pass': newPassController.text.toString(),
-                          }).then(
-                            (_) {
+                          if (snap.docs.isNotEmpty) {
+                            // Check and assign
+                            final doc = snap.docs[0];
+                            String checkName = doc.get('name');
+                            int checkMpin = doc.get('mpin');
+                            if (checkName == _name && checkMpin == _mPin) {
+                              await FirebaseFirestore.instance
+                                  .collection('Users')
+                                  .doc(snap.docs[0].id)
+                                  .update({
+                                'pass': newPassController.text.toString(),
+                              }).then(
+                                (_) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor: Colors.blue.shade300,
+                                      content: Text(
+                                        'Success!',
+                                        style: TextStyle(
+                                          fontFamily: 'Nexa Light',
+                                          fontSize: screenWidth / 30,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                  setState(() {
+                                    circular = false;
+                                  });
+                                },
+                              );
+                            } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   backgroundColor: Colors.blue.shade300,
                                   content: Text(
-                                    'Success!',
+                                    'The login credentials do not match, please confirm and try again!',
                                     style: TextStyle(
                                       fontFamily: 'Nexa Light',
                                       fontSize: screenWidth / 30,
@@ -199,10 +226,25 @@ class _ChgPassScreenState extends State<ChgPassScreen> {
                               setState(() {
                                 circular = false;
                               });
-                            },
-                          );
+                            }
+                          }
                         } catch (e) {
-                          // print(e.toString());
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              backgroundColor: Colors.blue.shade300,
+                              content: Text(
+                                e.toString(),
+                                style: TextStyle(
+                                  fontFamily: 'Nexa Light',
+                                  fontSize: screenWidth / 30,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          );
+                          setState(() {
+                            circular = false;
+                          });
                         }
                       }
                     },

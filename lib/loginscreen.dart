@@ -1,8 +1,13 @@
+import 'package:page_transition/page_transition.dart';
 import 'package:paytmmatka/mainscreen.dart';
+import 'package:paytmmatka/model/test.dart';
 import 'package:paytmmatka/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:paytmmatka/screens/fgt_pass.dart';
+import 'package:paytmmatka/services/task_data.dart';
 import 'package:paytmmatka/signupscreen.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,7 +18,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  TextEditingController mController = TextEditingController();
+  TextEditingController idController = TextEditingController();
   TextEditingController passController = TextEditingController();
 
   double screenHeight = 0.0;
@@ -21,10 +26,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Color primary = Colors.blue.shade300;
   bool pass = true;
+  bool circular = false;
   late SharedPreferences sharedPreferences;
+
+  int _id = 0;
+  String _password = '';
 
   @override
   Widget build(BuildContext context) {
+    // Provider
+    final taskData = Provider.of<TaskData>(context);
+
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
@@ -61,13 +73,33 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // fieldTitle('Mobile Number'),
-                    customField('Mobile Number', Icons.person, null,
-                        mController, false, () {}),
+                    customField(
+                      'Mobile Number',
+                      Icons.person,
+                      null,
+                      idController,
+                      false,
+                      (String id) {
+                        setState(() {
+                          _id = int.parse(id);
+                        });
+                      },
+                      () {},
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         // fieldTitle('Password'),
-                        fgtPass('Forget Password?', onTap: () {})
+                        fgtPass('Forget Password?', onTap: () { Navigator.push(
+                                context,
+                                PageTransition(
+                                  child: const ForgetPassScreen(),
+                                  type: PageTransitionType.leftToRight,
+                                  duration: const Duration(milliseconds: 500),
+                                  reverseDuration:
+                                      const Duration(milliseconds: 500),
+                                ),
+                              );})
                       ],
                     ),
                     customField(
@@ -75,7 +107,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         Icons.password,
                         pass ? Icons.visibility_off : Icons.visibility,
                         passController,
-                        pass, () {
+                        pass, (String pass) {
+                      setState(() {
+                        _password = pass;
+                      });
+                    }, () {
                       setState(() {
                         pass = !pass;
                       });
@@ -85,60 +121,124 @@ class _LoginScreenState extends State<LoginScreen> {
                         // Keypad closes
                         FocusScope.of(context).unfocus();
 
-                        String id = mController.text.trim();
-                        String password = passController.text.trim();
+                        // Start rolling
+                        setState(() {
+                          circular = true;
+                        });
 
-                        if (id.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Employee id is empty!')));
-                        } else if (password.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Password is empty!')));
+                        if (_id == 0 && _password == '') {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: Colors.blue.shade300,
+                              content: Text(
+                                'Enter a valid number and password and try again!',
+                                style: TextStyle(
+                                  fontFamily: 'Nexa Light',
+                                  fontSize: screenWidth / 30,
+                                  color: Colors.white,
+                                ),
+                              )));
+                          // Stop rolling
+                          setState(() {
+                            circular = false;
+                          });
+                        } else if (_id == 0) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: Colors.blue.shade300,
+                              content: Text(
+                                'Mobile number is empty, try again!',
+                                style: TextStyle(
+                                  fontFamily: 'Nexa Light',
+                                  fontSize: screenWidth / 30,
+                                  color: Colors.white,
+                                ),
+                              )));
+                          // Stop rolling
+                          setState(() {
+                            circular = false;
+                          });
+                        } else if (_password == '') {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: Colors.blue.shade300,
+                              content: Text(
+                                'Password is empty, make changes and try again!',
+                                style: TextStyle(
+                                  fontFamily: 'Nexa Light',
+                                  fontSize: screenWidth / 30,
+                                  color: Colors.white,
+                                ),
+                              )));
+                          // Stop rolling
+                          setState(() {
+                            circular = false;
+                          });
                         } else {
-                          QuerySnapshot snap = await FirebaseFirestore.instance
-                              .collection('Employee')
-                              .where('id', isEqualTo: id)
-                              .get();
-
                           try {
-                            if (password == snap.docs[0]['password']) {
-                              User.employeeid = id;
+                            QuerySnapshot snap = await FirebaseFirestore
+                                .instance
+                                .collection('Users')
+                                .where('id', isEqualTo: _id)
+                                .get();
 
-                              sharedPreferences =
-                                  await SharedPreferences.getInstance();
+                            // Variables
+                            String name = snap.docs[0]['name'];
+                            double pts = snap.docs[0]['points'];
+                            int mpin = snap.docs[0]['mpin'];
 
-                              sharedPreferences
-                                  .setString('employeeid', id)
-                                  .then((_) {
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => MainScreen()));
-                              });
+                            if (snap.docs[0].exists &&
+                                _password == snap.docs[0]['pass']) {
+                              taskData.saveLogs(_id, name, pts, mpin);
+                              Navigator.pushReplacement(
+                                context,
+                                PageTransition(
+                                  child: const MainScreen(),
+                                  type: PageTransitionType.leftToRight,
+                                  duration: const Duration(milliseconds: 500),
+                                  reverseDuration:
+                                      const Duration(milliseconds: 500),
+                                ),
+                              );
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text('Password is not correct!')));
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                      backgroundColor: Colors.blue.shade300,
+                                      content: Text(
+                                        'Password is not correct!',
+                                        style: TextStyle(
+                                          fontFamily: 'Nexa Light',
+                                          fontSize: screenWidth / 30,
+                                          color: Colors.white,
+                                        ),
+                                      )));
                             }
                           } catch (e) {
+                            print(e.toString());
                             String error = '';
 
                             if (e.toString() ==
                                 'RangeError (index): Invalid value: Valid value range is empty: 0') {
                               setState(() {
-                                error = 'Employee id does not exist!';
+                                error = 'Invalid account, does not exist!';
                               });
                             } else {
                               setState(() {
                                 error = 'Error occurred!';
                               });
                             }
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(SnackBar(content: Text(error)));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                backgroundColor: Colors.blue.shade300,
+                                content: Text(
+                                  error,
+                                  style: TextStyle(
+                                    fontFamily: 'Nexa Light',
+                                    fontSize: screenWidth / 30,
+                                    color: Colors.white,
+                                  ),
+                                )));
                           }
+                          // Stop rolling
+                          setState(() {
+                            circular = false;
+                          });
                         }
                       },
                       child: Container(
@@ -151,14 +251,19 @@ class _LoginScreenState extends State<LoginScreen> {
                               const BorderRadius.all(Radius.circular(30)),
                         ),
                         child: Center(
-                          child: Text(
-                            'Login',
-                            style: TextStyle(
-                                fontFamily: 'Nexa Bold',
-                                fontSize: screenWidth / 26,
-                                color: Colors.white,
-                                letterSpacing: 2),
-                          ),
+                          child: circular
+                              ? Transform.scale(
+                                  scale: 0.5,
+                                  child: const CircularProgressIndicator(
+                                      color: Colors.white))
+                              : Text(
+                                  'Login',
+                                  style: TextStyle(
+                                      fontFamily: 'Nexa Bold',
+                                      fontSize: screenWidth / 26,
+                                      color: Colors.white,
+                                      letterSpacing: 2),
+                                ),
                         ),
                       ),
                     ),
@@ -169,10 +274,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: GestureDetector(
                         onTap: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const SafeArea(child: SignUpScreen())));
+                            context,
+                            PageTransition(
+                              child: const SignUpScreen(),
+                              type: PageTransitionType.rightToLeft,
+                              duration: const Duration(milliseconds: 500),
+                              reverseDuration:
+                                  const Duration(milliseconds: 500),
+                            ),
+                          );
                         },
                         child: Text(
                           'Register Now',
@@ -224,8 +334,14 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget customField(String hint, IconData icon, IconData? suffixicon,
-      TextEditingController controller, bool obscure, Function onTap) {
+  Widget customField(
+      String hint,
+      IconData icon,
+      IconData? suffixicon,
+      TextEditingController controller,
+      bool obscure,
+      Function(String) onChanged,
+      Function onTap) {
     return Container(
       width: screenWidth,
       margin: const EdgeInsets.only(bottom: 12),
@@ -259,6 +375,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontWeight: FontWeight.bold,
                     color: Colors.black),
                 controller: controller,
+                onChanged: (value) {
+                  onChanged(value);
+                },
                 enableSuggestions: false,
                 autocorrect: false,
                 decoration: InputDecoration(

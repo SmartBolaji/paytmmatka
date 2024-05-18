@@ -10,7 +10,7 @@ import 'package:paytmmatka/admin/results.dart';
 import 'package:paytmmatka/admin/transt.dart';
 import 'package:paytmmatka/admin/users.dart';
 import 'package:paytmmatka/services/task_data.dart';
-import 'package:paytmmatka/widgets/drawer_widget.dart';
+import 'package:paytmmatka/widgets/admin_drawer.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -182,7 +182,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
           ),
         ),
       ),
-      drawer: const DrawerWidget(),
+      drawer: const SafeArea(child: AdminDrawerWidget()),
       body: SingleChildScrollView(
         padding: const EdgeInsets.only(
           left: 20,

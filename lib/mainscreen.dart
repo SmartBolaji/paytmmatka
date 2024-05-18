@@ -1,16 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttericon/rpg_awesome_icons.dart';
 import 'package:iconly/iconly.dart';
-import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:paytmmatka/admin/admin_panel.dart';
 import 'package:paytmmatka/play.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:paytmmatka/screens/game_rates.dart';
+import 'package:paytmmatka/screens/main_starline.dart';
 import 'package:paytmmatka/screens/points.dart';
+import 'package:paytmmatka/screens/wthpoints.dart';
 import 'package:paytmmatka/services/task_data.dart';
 import 'package:paytmmatka/widgets/all_tile.dart';
 import 'package:paytmmatka/widgets/drawer_widget.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -21,26 +25,40 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   late Future<void> fetchDataFuture;
+  final Uri _url = Uri.parse('https://flutter.dev');
 
   QuerySnapshot? _snap;
+  QuerySnapshot? _snap1;
   double screenHeight = 0.0;
   double screenWidth = 0.0;
-
   int currentSize = 0;
 
+  // Variables (admin)
+  int adminId = 0;
+  String alertMsg = '';
+
   // Functions
+  Future<void> _launchUrl({required String url}) async {
+    if (!await launchUrl(Uri.parse(url),
+        mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $_url');
+    }
+  }
+
   // Method to load games data
   Future<void> loadMrkData() async {
     try {
       final snap = await FirebaseFirestore.instance
           .collection('Games')
           .where('status', isEqualTo: 'Active')
+          .where('mrksection', isEqualTo: 'Mumbai')
           .orderBy('created', descending: false)
           .get();
       if (snap.docs.isEmpty) {
         _snap = await FirebaseFirestore.instance
             .collection('Games')
             .where('status', isEqualTo: 'Active')
+            .where('mrksection', isEqualTo: 'Mumbai')
             .orderBy('created', descending: false)
             .get(const GetOptions(source: Source.cache));
       } else {
@@ -60,9 +78,34 @@ class _MainScreenState extends State<MainScreen> {
     }
   }
 
+  // load the app settings
+  Future<void> loadSettingsData() async {
+    try {
+      final snap =
+          await FirebaseFirestore.instance.collection('Settings').get();
+      if (snap.docs.isEmpty) {
+        _snap1 = await FirebaseFirestore.instance
+            .collection('Settings')
+            .get(const GetOptions(source: Source.cache));
+      } else {
+        _snap1 = snap;
+      }
+
+      if (_snap1!.docs[0].exists) {
+        final doc = _snap1!.docs[0];
+        adminId = doc.get('adminid');
+        alertMsg = doc.get('alertmsg');
+      }
+      setState(() {});
+    } catch (e) {
+      e.toString();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    loadSettingsData();
     fetchDataFuture = loadMrkData();
   }
 
@@ -76,6 +119,28 @@ class _MainScreenState extends State<MainScreen> {
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
+      // Start of the Floating Action Button
+      floatingActionButton: taskData.id == adminId
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  PageTransition(
+                    child: const AdminPanelScreen(),
+                    type: PageTransitionType.bottomToTop,
+                    duration: const Duration(milliseconds: 1000),
+                    reverseDuration: const Duration(milliseconds: 500),
+                  ),
+                );
+              },
+              backgroundColor: Colors.blue.shade300,
+              child: Icon(
+                Icons.vpn_key,
+                color: Colors.white,
+                size: screenWidth / 25,
+              ))
+          : null,
+      // End of Floating Action Button
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.blue.shade300,
@@ -140,18 +205,10 @@ class _MainScreenState extends State<MainScreen> {
               // color: Colors.black,
               decoration: const BoxDecoration(
                   color: Colors.black,
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     color: Colors.black, // Shadow color
-                  //     spreadRadius: 3, // Spread radius
-                  //     blurRadius: 3, // Blur radius
-                  //     offset: Offset(0, 3), // Offset from the top left corner
-                  //   ),
-                  // ],
                   borderRadius: BorderRadius.all(Radius.circular(10))),
               child: Center(
                 child: Text(
-                  "Make use of PayTM or Google Pay to make a transaction",
+                  alertMsg,
                   style: TextStyle(
                       fontFamily: 'Nexa Bold',
                       fontSize: screenWidth / 20,
@@ -163,7 +220,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
           Expanded(
             child: ListView(
-              padding: EdgeInsets.only(
+              padding: const EdgeInsets.only(
                 bottom: 20,
               ),
               children: [
@@ -175,9 +232,20 @@ class _MainScreenState extends State<MainScreen> {
                     children: [
                       Expanded(
                         child: topButtons(
-                            onTap: () {},
-                            icon: FontAwesomeIcons.whatsapp,
-                            text: "+919530196562",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  child: const WthPointsScreen(),
+                                  type: PageTransitionType.leftToRight,
+                                  duration: const Duration(milliseconds: 500),
+                                  reverseDuration:
+                                      const Duration(milliseconds: 500),
+                                ),
+                              );
+                            },
+                            icon: IconlyBold.wallet,
+                            text: 'Add Points',
                             screenWidth: screenWidth),
                       ),
                       const SizedBox(
@@ -185,7 +253,18 @@ class _MainScreenState extends State<MainScreen> {
                       ),
                       Expanded(
                         child: topButtons(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  child: const WthPointsScreen(),
+                                  type: PageTransitionType.rightToLeft,
+                                  duration: const Duration(milliseconds: 500),
+                                  reverseDuration:
+                                      const Duration(milliseconds: 500),
+                                ),
+                              );
+                            },
                             icon: FontAwesomeIcons.wallet,
                             text: "Withdraw",
                             screenWidth: screenWidth),
@@ -202,14 +281,47 @@ class _MainScreenState extends State<MainScreen> {
                       Expanded(
                         child: topButtons(
                             onTap: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const GameRatesScreen()));
+                              _launchUrl(url: 'https://flutter.dev');
                             },
-                            icon: FontAwesomeIcons.star,
-                            text: "Game Rates",
+                            icon: FontAwesomeIcons.whatsapp,
+                            text: "+919530196562",
+                            screenWidth: screenWidth),
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      ),
+                      Expanded(
+                        child: topButtons(
+                            onTap: () {},
+                            icon: Icons.call_outlined,
+                            text: "+919530196562",
+                            screenWidth: screenWidth),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16, top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: topButtons(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  child: const PlayStarlineScreen(),
+                                  type: PageTransitionType.leftToRight,
+                                  duration: const Duration(milliseconds: 500),
+                                  reverseDuration:
+                                      const Duration(milliseconds: 500),
+                                ),
+                              );
+                            },
+                            icon: RpgAwesome.perspective_dice_one,
+                            text: 'PLAY STARLINE',
                             screenWidth: screenWidth),
                       ),
                       const SizedBox(
@@ -247,6 +359,7 @@ class _MainScreenState extends State<MainScreen> {
                           (index) {
                             final doc = _snap!.docs[index];
                             String market = doc.get('mrkname');
+                            String mrkSection = doc.get('mrksection');
                             String mrkOpen = doc.get('mrkopen');
                             String mrkClose = doc.get('mrkclose');
                             String mrkDigit = doc.get('digit').toString();
@@ -276,6 +389,7 @@ class _MainScreenState extends State<MainScreen> {
                                         PageTransition(
                                           child: PlayScreen(
                                             mainTitle: market,
+                                            mainSection: mrkSection,
                                           ),
                                           type: PageTransitionType.bottomToTop,
                                           duration:
@@ -327,7 +441,9 @@ class _MainScreenState extends State<MainScreen> {
             const EdgeInsets.only(top: 15, bottom: 15, right: 10, left: 10),
         // width: screenWidth / 2.2,
         decoration: BoxDecoration(
-          color: Colors.blue.shade900,
+          color: text == 'PLAY STARLINE' || text == 'How To Play'
+              ? Colors.grey.shade800
+              : Colors.blue.shade900,
           borderRadius: const BorderRadius.all(
             Radius.circular(40),
           ),

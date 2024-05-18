@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:paytmmatka/widgets/edit_games.dart';
 import 'package:paytmmatka/widgets/reward_users.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,6 +44,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
   // Market details
   int userId = 0;
   String allMrkName = '';
+  String allMrkSection = '';
   String allMrkType = '';
   String allBidMrkSession = '';
   int allBidDigit = 0;
@@ -748,6 +748,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                               buildRow([
                                                 '#',
                                                 'Game\nName',
+                                                'Section',
                                                 'Bid',
                                                 'Session',
                                                 'Digit',
@@ -773,6 +774,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                             final doc = _snap2!.docs[index];
                                             userId = doc.get('id');
                                             allMrkName = doc.get('market');
+                                            allMrkSection =
+                                                doc.get('mrksection');
                                             allMrkType = doc.get('mrktype');
                                             allBidMrkSession =
                                                 doc.get('session');
@@ -833,6 +836,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                                                         buildRow([
                                                           '${index + 1}',
                                                           allMrkName,
+                                                          allMrkSection,
                                                           allStakeAmt
                                                               .toString(),
                                                           allBidMrkSession,

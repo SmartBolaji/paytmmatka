@@ -1,52 +1,55 @@
-import 'package:iconly/iconly.dart';
-import 'package:paytmmatka/mainscreen.dart';
-import 'package:paytmmatka/model/user.dart';
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:paytmmatka/mainscreen.dart';
+import 'package:paytmmatka/services/task_data.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AddPointsScreen extends StatefulWidget {
-  const AddPointsScreen({
+class PhoneOtpScreen extends StatefulWidget {
+  final String verifyId;
+  final int id;
+  final int mpin;
+  final String name;
+  final String pass;
+  final double points;
+  const PhoneOtpScreen({
     Key? key,
+    required this.verifyId,
+    required this.id,
+    required this.mpin,
+    required this.name,
+    required this.pass,
+    required this.points,
   }) : super(key: key);
 
   @override
-  State<AddPointsScreen> createState() => _AddPointsScreenState();
+  State<PhoneOtpScreen> createState() => _PhoneOtpScreenState();
 }
 
-class _AddPointsScreenState extends State<AddPointsScreen> {
-  TextEditingController pointController = TextEditingController();
+class _PhoneOtpScreenState extends State<PhoneOtpScreen> {
+  TextEditingController otpController = TextEditingController();
 
   // Late variables
-  // late List<String> digitList;
-  late SharedPreferences sharedPreferences;
 
   // Get the current date
   DateTime now = DateTime.now();
 
   double screenHeight = 0.0;
   double screenWidth = 0.0;
+  bool circular = false;
+  String _otp = '';
 
   Color primary = Colors.blue.shade300;
 
-  // Session
-  String select0 = 'Payment Method';
-
-  List<String> payList = [
-    'Payment Method',
-    'Google Pay',
-    'Phone Pe',
-    'PayTm',
-  ];
-
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   checkCharacterLimit();
-  // }
-
   @override
   Widget build(BuildContext context) {
+    // Provider
+    final taskData = Provider.of<TaskData>(context);
+
     screenHeight = MediaQuery.of(context).size.height;
     screenWidth = MediaQuery.of(context).size.width;
 
@@ -69,7 +72,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Add Fund',
+                'Verify Number!',
                 style: TextStyle(
                   fontFamily: 'Nexa Bold',
                   fontSize: screenWidth / 17,
@@ -93,15 +96,10 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Show to all
-                  customField('Enter Point', null, null, pointController, false,
-                      false, (value) {}),
-                  customField('Minimum Deposit is 500', IconlyBold.message,
-                      null, null, false, true, null),
-                  customSelect(context, payList, select0, (String sel) {
+                  customField('Enter OTP', null, null, otpController, false,
+                      false, false, (String otp) {
                     setState(() {
-                      select0 = sel;
-                      print('Result: $select0');
+                      _otp = otp;
                     });
                   }),
                   GestureDetector(
@@ -109,70 +107,91 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                       // Keypad closes
                       FocusScope.of(context).unfocus();
 
-                      String id = pointController.text.trim();
-                      String password = pointController.text.trim();
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          backgroundColor: Colors.blue.shade300,
-                          content: Text(
-                            'Unavailable, try again later!',
-                            style: TextStyle(
-                              fontFamily: 'Nexa Light',
-                              fontSize: screenWidth / 30,
-                              color: Colors.white,
+                      setState(() {
+                        circular = true;
+                      });
+
+                      if (_otp == '') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            backgroundColor: Colors.blue.shade300,
+                            content: Text(
+                              'Enter the valid otp and try again!',
+                              style: TextStyle(
+                                fontFamily: 'Nexa Light',
+                                fontSize: screenWidth / 30,
+                                color: Colors.white,
+                              ),
                             ),
-                          )));
-                      // if (id.isEmpty) {
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //       const SnackBar(
-                      //           content: Text('Employee id is empty!')));
-                      // } else if (password.isEmpty) {
-                      //   ScaffoldMessenger.of(context).showSnackBar(
-                      //       const SnackBar(
-                      //           content: Text('Password is empty!')));
-                      // } else {
-                      //   QuerySnapshot snap = await FirebaseFirestore.instance
-                      //       .collection('Employee')
-                      //       .where('id', isEqualTo: id)
-                      //       .get();
+                          ),
+                        );
+                        // Stop rolling
+                        setState(() {
+                          circular = false;
+                        });
+                      } else {
+                        try {
+                          final cred = PhoneAuthProvider.credential(
+                              verificationId: widget.verifyId,
+                              smsCode: otpController.text);
 
-                      //   try {
-                      //     if (password == snap.docs[0]['password']) {
-                      //       User.employeeid = id;
+                          await FirebaseAuth.instance
+                              .signInWithCredential(cred)
+                              .then((_) async {
+                            await FirebaseFirestore.instance
+                                .collection('Users')
+                                .doc()
+                                .set({
+                              'acctholder': '',
+                              'acctno': 0,
+                              'bank': '',
+                              'created': DateTime.now(),
+                              'googlepay': 0,
+                              'gpay': 0,
+                              'id': widget.id,
+                              'ifsc': 0,
+                              'mpin': widget.mpin,
+                              'name': widget.name,
+                              'pass': widget.pass,
+                              'paytm': 0,
+                              'phonepe': 0,
+                              'points': widget.points,
+                              'verified': false,
+                            }).then((_) {
+                              taskData.saveLogs(widget.id, widget.name,
+                                  widget.points, taskData.mpin);
+                            }).then((_) {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                PageTransition(
+                                  child: const MainScreen(),
+                                  type: PageTransitionType.leftToRight,
+                                  duration: const Duration(milliseconds: 500),
+                                  reverseDuration:
+                                      const Duration(milliseconds: 500),
+                                ),
+                                (_) => false,
+                              );
+                            });
+                          });
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              backgroundColor: Colors.blue.shade300,
+                              content: Text(
+                                e.toString(),
+                                style: TextStyle(
+                                  fontFamily: 'Nexa Light',
+                                  fontSize: screenWidth / 30,
+                                  color: Colors.white,
+                                ),
+                              )));
+                        }
 
-                      //       sharedPreferences =
-                      //           await SharedPreferences.getInstance();
-
-                      //       sharedPreferences
-                      //           .setString('employeeid', id)
-                      //           .then((_) {
-                      //         Navigator.pushReplacement(
-                      //             context,
-                      //             MaterialPageRoute(
-                      //                 builder: (context) =>
-                      //                      const MainScreen()));
-                      //       });
-                      //     } else {
-                      //       ScaffoldMessenger.of(context).showSnackBar(
-                      //           const SnackBar(
-                      //               content: Text('Password is not correct!')));
-                      //     }
-                      //   } catch (e) {
-                      //     String error = '';
-
-                      //     if (e.toString() ==
-                      //         'RangeError (index): Invalid value: Valid value range is empty: 0') {
-                      //       setState(() {
-                      //         error = 'Employee id does not exist!';
-                      //       });
-                      //     } else {
-                      //       setState(() {
-                      //         error = 'Error occurred!';
-                      //       });
-                      //     }
-                      //     ScaffoldMessenger.of(context)
-                      //         .showSnackBar(SnackBar(content: Text(error)));
-                      //   }
-                      // }
+                        // Stop rolling
+                        setState(() {
+                          circular = false;
+                        });
+                      }
                     },
                     child: Container(
                       height: 60,
@@ -184,14 +203,19 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                             const BorderRadius.all(Radius.circular(30)),
                       ),
                       child: Center(
-                        child: Text(
-                          'SUBMIT',
-                          style: TextStyle(
-                              fontFamily: 'Nexa Bold',
-                              fontSize: screenWidth / 26,
-                              color: Colors.white,
-                              letterSpacing: 2),
-                        ),
+                        child: circular
+                            ? Transform.scale(
+                                scale: 0.5,
+                                child: const CircularProgressIndicator(
+                                    color: Colors.white))
+                            : Text(
+                                'SUBMIT',
+                                style: TextStyle(
+                                    fontFamily: 'Nexa Bold',
+                                    fontSize: screenWidth / 26,
+                                    color: Colors.white,
+                                    letterSpacing: 2),
+                              ),
                       ),
                     ),
                   ),
@@ -242,6 +266,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
       TextEditingController? controller,
       bool obscure,
       bool readOnly,
+      numbersOnly,
       Function(String)? onChanged) {
     return Container(
       width: screenWidth,
@@ -284,7 +309,7 @@ class _AddPointsScreenState extends State<AddPointsScreen> {
                 autocorrect: false,
                 readOnly: readOnly,
                 // maxLength: 2,
-                keyboardType: TextInputType.number,
+                keyboardType: numbersOnly ? TextInputType.number : null,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(
                     vertical: readOnly ? screenHeight / 35 : screenHeight / 50,

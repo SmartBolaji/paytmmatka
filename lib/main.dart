@@ -1,7 +1,5 @@
-import 'package:flutter/widgets.dart';
 import 'package:paytmmatka/firebase_options.dart';
 import 'package:paytmmatka/mainscreen.dart';
-import 'package:paytmmatka/model/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:paytmmatka/loginscreen.dart';
@@ -84,13 +82,13 @@ class _AuthCheckState extends State<AuthCheck> {
 
   void _getCurrentUser() async {
     sharedPreferences = await SharedPreferences.getInstance();
-
+    // Provider
+    final taskData = Provider.of<TaskData>(context, listen: false);
     try {
-      if (sharedPreferences.getString('employeeid') != null) {
+      if (sharedPreferences.getInt('id') != null) {
         setState(() {
-          User.employeeid = sharedPreferences.getString('employeeid')!;
+          taskData.id = sharedPreferences.getInt('id')!;
           userAvailable = true;
-          // print('Show: + ${User.employeeid}');
         });
       }
     } catch (e) {
@@ -102,6 +100,17 @@ class _AuthCheckState extends State<AuthCheck> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: userAvailable ? MainScreen() : const LoginScreen());
+    // Provider
+    final taskData = Provider.of<TaskData>(context);
+    try {
+      if (sharedPreferences.getInt('id') != null) {
+        taskData.loadLogs();
+      }
+    } catch (e) {
+      e.toString();
+    }
+    return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: userAvailable ? const MainScreen() : const LoginScreen());
   }
 }

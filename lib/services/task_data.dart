@@ -15,11 +15,11 @@ class TaskData extends ChangeNotifier {
   bool _showAd = true;
   bool _normal = true;
   bool _darkMode = false;
-  int _snapSize = 0;
+  // int _snapSize = 0;
   String _name = '';
-  int _id = 123456789;
-  double _points = 1100.0;
-  int _mpin = 1234;
+  int _id = 0;
+  double _points = 0.0;
+  int _mpin = 0;
   String _month1 = DateFormat('MMMM').format(DateTime.now());
   String _month2 = DateFormat('MMMM').format(DateTime.now());
   String _month3 = DateFormat('MMMM').format(DateTime.now());
@@ -51,11 +51,11 @@ class TaskData extends ChangeNotifier {
     notifyListeners();
   }
 
-  int get snapSize => _snapSize;
-  set snapSize(int value) {
-    _snapSize = value;
-    notifyListeners();
-  }
+  // int get snapSize => _snapSize;
+  // set snapSize(int value) {
+  //   _snapSize = value;
+  //   notifyListeners();
+  // }
 
   String get name => _name;
   set name(String value) {
@@ -190,8 +190,39 @@ class TaskData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateSnap1(context, int size) {
-    _snapSize = size;
+  // void updateSnap1(context, int size) {
+  //   _snapSize = size;
+  //   notifyListeners();
+  // }
+
+  // save logs to shared preferences
+  void saveLogsOut() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('id');
+    notifyListeners();
+  }
+
+  // save logs to shared preferences
+  void saveLogs(int newId, String newName, double newPts, int newMpin) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    id = newId;
+    name = newName;
+    points = newPts;
+    mpin = newMpin;
+    prefs.setInt('id', newId);
+    prefs.setString('name', newName);
+    prefs.setDouble('points', newPts);
+    prefs.setInt('mpin', newMpin);
+    notifyListeners();
+  }
+
+  // load logs value from shared preferences
+  void loadLogs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    id = prefs.getInt('id')!;
+    name = prefs.getString('name')!;
+    points = prefs.getDouble('points')!;
+    mpin = prefs.getInt('mpin')!;
     notifyListeners();
   }
 

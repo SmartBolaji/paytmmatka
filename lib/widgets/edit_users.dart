@@ -145,27 +145,25 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
               offset: Offset(2, 2),
             )
           ]),
-      child: Expanded(
-        child: Padding(
-          padding: EdgeInsets.only(right: screenWidth / 30),
-          child: TextFormField(
-            controller: controller,
-            style: TextStyle(
-              fontFamily: 'Nexa Light',
+      child: Padding(
+        padding: EdgeInsets.only(left: screenWidth / 30),
+        child: TextFormField(
+          controller: controller,
+          style: TextStyle(
+            fontFamily: 'Nexa Light',
+            fontSize: screenWidth / 25,
+            color: Colors.black,
+          ),
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(
+              vertical: screenHeight / 50,
+            ),
+            border: InputBorder.none,
+            labelText: label,
+            labelStyle: TextStyle(
+              fontFamily: 'Nexa Bold',
               fontSize: screenWidth / 25,
               color: Colors.black,
-            ),
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.symmetric(
-                vertical: screenHeight / 50,
-              ),
-              border: InputBorder.none,
-              labelText: label,
-              labelStyle: TextStyle(
-                fontFamily: 'Nexa Bold',
-                fontSize: screenWidth / 25,
-                color: Colors.black,
-              ),
             ),
           ),
         ),
@@ -188,15 +186,33 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     };
 
     widget.doc.reference.update(updatedData).then((_) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('User details updated successfully!'),
-        duration: Duration(seconds: 2),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.blue.shade300,
+          content: Text(
+            'Saved!',
+            style: TextStyle(
+              fontFamily: 'Nexa Light',
+              fontSize: screenWidth / 30,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
     }).catchError((error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Failed to update user details: $error'),
-        duration: const Duration(seconds: 2),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            'Unable to update, try again later!',
+            style: TextStyle(
+              fontFamily: 'Nexa Light',
+              fontSize: screenWidth / 30,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      );
     });
   }
 }

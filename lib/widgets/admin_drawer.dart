@@ -1,8 +1,15 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/font_awesome_icons.dart';
+import 'package:fluttericon/rpg_awesome_icons.dart';
 import 'package:iconly/iconly.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:paytmmatka/admin/games.dart';
+import 'package:paytmmatka/admin/results.dart';
+import 'package:paytmmatka/admin/settings.dart';
+import 'package:paytmmatka/admin/transt.dart';
+import 'package:paytmmatka/admin/users.dart';
 import 'package:paytmmatka/loginscreen.dart';
 import 'package:paytmmatka/screens/addpoints.dart';
 import 'package:paytmmatka/screens/addupi.dart';
@@ -16,8 +23,8 @@ import 'package:paytmmatka/services/task_data.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class DrawerWidget extends StatelessWidget {
-  const DrawerWidget({super.key});
+class AdminDrawerWidget extends StatelessWidget {
+  const AdminDrawerWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -87,14 +94,14 @@ class DrawerWidget extends StatelessWidget {
               height: 15,
             ),
             listTiles(
-              label: 'My Profile',
+              label: 'Users',
               icon: IconlyBold.profile,
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   PageTransition(
-                    child: const ProfileScreen(),
+                    child: const UsersScreen(),
                     type: PageTransitionType.leftToRight,
                     duration: const Duration(milliseconds: 500),
                     reverseDuration: const Duration(milliseconds: 500),
@@ -103,14 +110,14 @@ class DrawerWidget extends StatelessWidget {
               },
             ),
             listTiles(
-              label: 'Add Points',
-              icon: IconlyBold.wallet,
+              label: 'Games',
+              icon: RpgAwesome.perspective_dice_one,
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   PageTransition(
-                    child: const AddPointsScreen(),
+                    child: const GamesScreen(),
                     type: PageTransitionType.leftToRight,
                     duration: const Duration(milliseconds: 500),
                     reverseDuration: const Duration(milliseconds: 500),
@@ -119,14 +126,15 @@ class DrawerWidget extends StatelessWidget {
               },
             ),
             listTiles(
-              label: 'Withdraw Point',
-              icon: FontAwesome5.dollar_sign,
+              label: 'Transactions',
+              icon:               FontAwesome5.tasks,
+
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
                   PageTransition(
-                    child: const WthPointsScreen(),
+                    child: const TranstScreen(),
                     type: PageTransitionType.leftToRight,
                     duration: const Duration(milliseconds: 500),
                     reverseDuration: const Duration(milliseconds: 500),
@@ -135,112 +143,35 @@ class DrawerWidget extends StatelessWidget {
               },
             ),
             listTiles(
-              label: 'Bid History',
-              icon: IconlyBold.activity,
+              label: 'Declare Results',
+              icon: Icons.announcement,
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const BidsScreen()));
+                        builder: (context) => const ResultsScreen()));
               },
             ),
             listTiles(
-              label: 'Transaction',
-              icon: IconlyBold.more_circle,
+              label: 'Settings',
+              icon: IconlyBold.setting,
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const TransactScreen()));
-              },
-            ),
-            listTiles(
-              label: 'Add UPI ID',
-              icon: FontAwesome.bank,
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    child: const AddUpiScreen(),
-                    type: PageTransitionType.leftToRight,
-                    duration: const Duration(milliseconds: 500),
-                    reverseDuration: const Duration(milliseconds: 500),
-                  ),
-                );
-              },
-            ),
-            listTiles(
-              label: 'Game Rates',
-              icon: IconlyBold.game,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    child: const GameRatesScreen(),
-                    type: PageTransitionType.leftToRight,
-                    duration: const Duration(milliseconds: 500),
-                    reverseDuration: const Duration(milliseconds: 500),
-                  ),
-                );
-              },
-            ),
-            listTiles(
-              label: 'Contact Us',
-              icon: Icons.contact_support,
-              onTap: () {
-                // Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  PageTransition(
-                    child: const ContactsScreen(),
-                    type: PageTransitionType.leftToRight,
-                    duration: const Duration(milliseconds: 500),
-                    reverseDuration: const Duration(milliseconds: 500),
-                  ),
-                );
-              },
-            ),
-            listTiles(
-              label: 'Rate App',
-              icon: IconlyBold.star,
-              onTap: () {
-                Navigator.pop(context);
-                launchURL('https://flutter.dev');
-              },
-            ),
-            listTiles(
-              label: 'How To Play',
-              icon: IconlyBold.play,
-              onTap: () {
-                Navigator.pop(context);
-                launchURL('https://paytmmakta.com');
-              },
-            ),
-            listTiles(
-              label: 'Share With Friends',
-              icon: Icons.share,
-              onTap: () async {
-                // try {
-                //   await Share.share('url',
-                //       subject: 'Share our app with friends and bid.');
-                // } catch (e) {
-                //   GlobalMethods.errorDialog(
-                //       errorMessage: e.toString(), context: context);
-                // }
+                        builder: (context) => const AdminSettings()));
               },
             ),
             listTiles(
               label: 'Logout',
               icon: IconlyBold.logout,
               onTap: () {
-                Navigator.pushAndRemoveUntil(
+                Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const LoginScreen()),
-                    (route) => false);
+                        builder: (context) => const LoginScreen()));
 
                 Future.delayed(const Duration(seconds: 2), () {
                   // Remove key

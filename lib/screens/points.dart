@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconly/iconly.dart';
-import 'package:page_transition/page_transition.dart';
-import 'package:paytmmatka/mainscreen.dart';
 import 'package:paytmmatka/screens/addpoints.dart';
-import 'package:paytmmatka/screens/chg_pass.dart';
 import 'package:paytmmatka/screens/transact.dart';
 import 'package:paytmmatka/screens/wthpoints.dart';
 import 'package:paytmmatka/services/task_data.dart';
@@ -29,15 +26,7 @@ class PointsScreen extends StatelessWidget {
         backgroundColor: Colors.blue.shade300,
         leading: IconButton(
           onPressed: () {
-            Navigator.push(
-              context,
-              PageTransition(
-                child: MainScreen(),
-                type: PageTransitionType.topToBottom,
-                duration: const Duration(milliseconds: 500),
-                reverseDuration: const Duration(milliseconds: 500),
-              ),
-            );
+            Navigator.pop(context);
           },
           icon: Icon(
             Icons.arrow_back,
